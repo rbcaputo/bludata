@@ -1,0 +1,6 @@
+@BludataAPI_HostAddress = http://localhost:5091
+
+GET {{BludataAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
