@@ -5,7 +5,7 @@ namespace BludataAPI.Mappers
 {
 	public class CompanyMapper
 	{
-		public CompanyDTO CompanyModelToDTO(CompanyModel companyModel)
+		public CompanyDTO ModelToDTO(CompanyModel companyModel)
 		{
 			return new()
 			{
@@ -15,6 +15,6 @@ namespace BludataAPI.Mappers
 			};
 		}
 
-		public CompanyModel CompanyDTOToModel(CompanyDTO companyDTO) { return new(companyDTO.Name, companyDTO.UF, companyDTO.CNPJ); }
+		public CompanyModel DTOToModel(CompanyDTO companyDTO) { return new(companyDTO.Name, companyDTO.UF, companyDTO.CNPJ); }
 	}
 }

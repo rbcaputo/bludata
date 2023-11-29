@@ -3,6 +3,7 @@ using BludataAPI.DTOs;
 using BludataAPI.Interfaces;
 using BludataAPI.Mappers;
 using BludataAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BludataAPI.Services
 {
@@ -11,16 +12,30 @@ namespace BludataAPI.Services
 		private readonly DataContext _context = context;
 		private readonly CompanyMapper _mapper = mapper;
 
+		public async Task<List<CompanyModel>?> GetAllAsync()
+		{
+			List<CompanyModel>? companies = await _context.Companies.ToListAsync();
+
+			if (companies.Count == 0) return null;
+			else return companies;
+		}
+		public async Task<CompanyModel?> GetByIDAsync(int companyID)
+		{
+			CompanyModel? company = await _context.Companies.FindAsync(companyID);
+
+			if (company == null) return null;
+			else return company;
+		}
+
 		public async Task<CompanyDTO> AddAsync(CompanyDTO companyDTO)
 		{
-			CompanyModel company = _mapper.CompanyDTOToModel(companyDTO);
+			CompanyModel company = _mapper.DTOToModel(companyDTO);
 
 			await _context.AddAsync(company);
 			await _context.SaveChangesAsync();
 
-			return _mapper.CompanyModelToDTO(company);
+			return _mapper.ModelToDTO(company);
 		}
-
 		public async Task<CompanyDTO?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
 		{
 			CompanyModel? company = await _context.Companies.FindAsync(companyID);
@@ -28,14 +43,13 @@ namespace BludataAPI.Services
 			if (company == null) return null;
 			else
 			{
-				company = _mapper.CompanyDTOToModel(companyDTO);
+				company = _mapper.DTOToModel(companyDTO);
 
 				await _context.SaveChangesAsync();
 
-				return _mapper.CompanyModelToDTO(company);
+				return _mapper.ModelToDTO(company);
 			}
 		}
-
 		public async Task<bool?> RemoveByIDAsync(int companyID)
 		{
 			CompanyModel? company = await _context.Companies.FindAsync(companyID);
@@ -43,7 +57,7 @@ namespace BludataAPI.Services
 			if (company == null) return null;
 			else
 			{
-				_context.Remove(company);
+				_context.Companies.Remove(company);
 
 				await _context.SaveChangesAsync();
 
