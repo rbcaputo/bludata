@@ -14,6 +14,5 @@ namespace BludataAPI.Interfaces
 		public Task<SupplierDTO> AddAsync(SupplierDTO supplierDTO);
 		public Task<SupplierDTO?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO);
 		public Task<bool?> RemoveByIDAsync(int supplierID);
-
 	}
 }

@@ -3,17 +3,15 @@ using BludataAPI.Models;
 
 namespace BludataAPI.Mappers
 {
-	public class SupplierMapper(CompanyMapper mapper)
+	public class SupplierMapper
 	{
-		private readonly CompanyMapper _mapper = mapper;
-
-		public SupplierDTO ModelToDTO(SupplierModel supplierModel)
+		public static SupplierDTO ModelToDTO(SupplierModel supplierModel)
 		{
 			List<CompanyDTO> companies = [];
 
 			foreach (CompanyModel company in supplierModel.Companies)
 			{
-				CompanyDTO companyDTO = _mapper.ModelToDTO(company);
+				CompanyDTO companyDTO = CompanyMapper.ModelToDTO(company);
 
 				companies.Add(companyDTO);
 			}
@@ -21,7 +19,7 @@ namespace BludataAPI.Mappers
 			return new()
 			{
 				Name = supplierModel.Name,
-				DocType = supplierModel.DocType,
+				DocType = supplierModel.DocType.ToUpper(),
 				SubDate = supplierModel.SubDate,
 				Companies = companies,
 
@@ -32,18 +30,29 @@ namespace BludataAPI.Mappers
 			};
 		}
 
-		public SupplierModel DTOToModel(SupplierDTO supplierDTO)
+		public static SupplierModel DTOToModel(SupplierDTO supplierDTO)
 		{
 			List<CompanyModel> companies = [];
 
 			foreach (CompanyDTO company in supplierDTO.Companies)
 			{
-				CompanyModel companyModel = _mapper.DTOToModel(company);
+				CompanyModel companyModel = CompanyMapper.DTOToModel(company);
 
 				companies.Add(companyModel);
 			}
 
-			return new(supplierDTO.Name, supplierDTO.DocType, companies, supplierDTO.SubDate, supplierDTO.CPF, supplierDTO.CNPJ, supplierDTO.RG, supplierDTO.BirthDate);
+			return new()
+			{
+				Name= supplierDTO.Name,
+				DocType = supplierDTO.DocType.ToUpper(),
+				SubDate = supplierDTO.SubDate,
+				Companies = companies,
+
+				CPF = supplierDTO.CPF,
+				CNPJ= supplierDTO.CNPJ,
+				RG = supplierDTO.RG,
+				BirthDate = supplierDTO.BirthDate
+			};
 		}
 	}
 }

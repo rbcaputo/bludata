@@ -9,12 +9,10 @@ namespace BludataAPI.Controllers
 	[ApiController]
 	public class SupplierController(SupplierService service) : ControllerBase
 	{
-		private readonly SupplierService _service = service;
-
 		[HttpGet]
 		public async Task<ActionResult<List<SupplierModel>?>> GetAllAsync()
 		{
-			List<SupplierModel>? suppliers = await _service.GetAllAsync();
+			List<SupplierModel>? suppliers = await service.GetAllAsync();
 
 			if (suppliers == null) return BadRequest("This database doesn't have any entries registered.");
 			else return Ok(suppliers);
@@ -22,7 +20,7 @@ namespace BludataAPI.Controllers
 		[HttpGet("{supplierID}")]
 		public async Task<ActionResult<SupplierModel?>> GetByIDAsync(int supplierID)
 		{
-			SupplierModel? supplier = await _service.GetByIDAsync(supplierID);
+			SupplierModel? supplier = await service.GetByIDAsync(supplierID);
 
 			if (supplier == null) return NotFound($"Entry with ID {supplierID} inexistent or not found.");
 			else return supplier;
@@ -30,7 +28,7 @@ namespace BludataAPI.Controllers
 		[HttpGet("/name/{supplierName}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByNameAsync(string supplierName)
 		{
-			List<SupplierDTO>? suppliers = await _service.GetByNameAsync(supplierName);
+			List<SupplierDTO>? suppliers = await service.GetByNameAsync(supplierName);
 
 			if (suppliers == null) return NotFound($"Entry with name {supplierName} inexistent or not found.");
 			else return Ok(suppliers);
@@ -38,7 +36,7 @@ namespace BludataAPI.Controllers
 		[HttpGet("/company/name/{companyName}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyNameAsync(string companyName)
 		{
-			List<SupplierDTO>? suppliers = await _service.GetByCompanyNameAsync(companyName);
+			List<SupplierDTO>? suppliers = await service.GetByCompanyNameAsync(companyName);
 
 			if (suppliers == null) return NotFound($"Entry with name {companyName} inexistent or not found.");
 			else return Ok(suppliers);
@@ -46,12 +44,12 @@ namespace BludataAPI.Controllers
 		[HttpGet("/company/uf/{companyUF}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyUFAsync(string companyUF)
 		{
-			List<SupplierDTO>? suppliers = await _service.GetByCompanyUFAsync(companyUF);
+			List<SupplierDTO>? suppliers = await service.GetByCompanyUFAsync(companyUF);
 
 			if (suppliers == null) return NotFound($"Entry with UF {companyUF} inexistent or not found.");
 			else return suppliers;
 		}
 
-		
+
 	}
 }

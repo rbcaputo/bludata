@@ -3,17 +3,15 @@ using BludataAPI.Models;
 
 namespace BludataAPI.Mappers
 {
-	public class CompanyMapper(SupplierMapper mapper)
+	public class CompanyMapper
 	{
-		private readonly SupplierMapper _mapper = mapper;
-
-		public CompanyDTO ModelToDTO(CompanyModel companyModel)
+		public static CompanyDTO ModelToDTO(CompanyModel companyModel)
 		{
 			List<SupplierDTO> suppliers = [];
 
 			foreach (SupplierModel supplier in companyModel.Suppliers)
 			{
-				SupplierDTO supplierDTO = _mapper.ModelToDTO(supplier);
+				SupplierDTO supplierDTO = SupplierMapper.ModelToDTO(supplier);
 
 				suppliers.Add(supplierDTO);
 			}
@@ -21,24 +19,30 @@ namespace BludataAPI.Mappers
 			return new()
 			{
 				Name = companyModel.Name,
-				UF = companyModel.UF,
+				UF = companyModel.UF.ToUpper(),
 				CNPJ = companyModel.CNPJ,
 				Suppliers = suppliers
 			};
 		}
 
-		public CompanyModel DTOToModel(CompanyDTO companyDTO)
+		public static CompanyModel DTOToModel(CompanyDTO companyDTO)
 		{
 			List<SupplierModel> suppliers = [];
 
 			foreach (SupplierDTO supplier in companyDTO.Suppliers)
 			{
-				SupplierModel supplierModel = _mapper.DTOToModel(supplier);
+				SupplierModel supplierModel = SupplierMapper.DTOToModel(supplier);
 
 				suppliers.Add(supplierModel);
 			}
 
-			return new(companyDTO.Name, companyDTO.UF, companyDTO.CNPJ, suppliers);
+			return new()
+			{
+				Name = companyDTO.Name,
+				UF = companyDTO.UF.ToUpper(),
+				CNPJ = companyDTO.CNPJ,
+				Suppliers = suppliers
+			};
 		}
 	}
 }
