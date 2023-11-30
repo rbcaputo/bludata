@@ -26,6 +26,14 @@ namespace BludataAPI.Services
 			if (company == null) return null;
 			else return company;
 		}
+		public async Task<List<CompanyDTO>?> GetByNameAsync(string companyName)
+		{
+			List<CompanyDTO>? companies = await _context.Companies.Where(com => com.Name.Equals(companyName, StringComparison.CurrentCultureIgnoreCase))
+				.Select(com => _mapper.ModelToDTO(com)).ToListAsync();
+
+			if (companies.Count == 0) return null;
+			else return companies;
+		}
 
 		public async Task<CompanyDTO> AddAsync(CompanyDTO companyDTO)
 		{

@@ -7,6 +7,7 @@ namespace BludataAPI.Interfaces
 	{
 		public Task<List<CompanyModel>?> GetAllAsync();
 		public Task<CompanyModel?> GetByIDAsync(int companyID);
+		public Task<List<CompanyDTO>?> GetByNameAsync(string companyName);
 
 		public Task<CompanyDTO> AddAsync(CompanyDTO companyDTO);
 		public Task<CompanyDTO?> EditByIDAsync(int companyID, CompanyDTO companyDTO);

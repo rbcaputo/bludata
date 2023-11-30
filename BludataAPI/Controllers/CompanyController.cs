@@ -27,6 +27,14 @@ namespace BludataAPI.Controllers
 			if (company == null) return NotFound($"Entry with ID {companyID} inexistent or not found.");
 			else return Ok(company);
 		}
+		[HttpGet("name/{companyName}")]
+		public async Task<ActionResult<List<CompanyDTO>?>> GetByNameAsync(string companyName)
+		{
+			List<CompanyDTO>? companies = await _service.GetByNameAsync(companyName);
+
+			if (companies == null) return NotFound($"Entry with name {companyName} inexistent or not found.");
+			else return Ok(companies);
+		}
 
 		[HttpPost]
 		public async Task<ActionResult<CompanyDTO>> AddAsync(CompanyDTO companyDTO)
