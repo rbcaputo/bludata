@@ -11,7 +11,19 @@ namespace BludataAPI.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			// Demais configurações das relações necessárias entre as entidades
+
+			modelBuilder.Entity<CompanyModel>().HasMany(com => com.Suppliers)
+				.WithMany(sup => sup.Companies)
+				.UsingEntity<Dictionary<string, object>>("CompanySupplier",
+					jnt => jnt.HasOne<SupplierModel>()
+						.WithMany()
+						.HasForeignKey("SupplierID")
+						.OnDelete(DeleteBehavior.Restrict),
+					jnt => jnt.HasOne<CompanyModel>()
+						.WithMany()
+						.HasForeignKey("CompanyID")
+						.OnDelete(DeleteBehavior.Restrict)
+				);
 		}
 	}
 }
