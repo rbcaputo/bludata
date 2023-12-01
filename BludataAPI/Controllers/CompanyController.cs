@@ -1,13 +1,13 @@
 ﻿using BludataAPI.DTOs;
+using BludataAPI.Interfaces;
 using BludataAPI.Models;
-using BludataAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Controllers
 {
 	[Route("[controller]")]
 	[ApiController]
-	public class CompanyController(CompanyService service) : ControllerBase
+	public class CompanyController(ICompanyService service) : ControllerBase
 	{
 		[HttpGet]
 		public async Task<ActionResult<List<CompanyModel>?>> GetAllAsync()

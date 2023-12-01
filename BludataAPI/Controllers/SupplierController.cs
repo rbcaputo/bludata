@@ -1,13 +1,13 @@
 ﻿using BludataAPI.DTOs;
+using BludataAPI.Interfaces;
 using BludataAPI.Models;
-using BludataAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Controllers
 {
 	[Route("[controller]")]
 	[ApiController]
-	public class SupplierController(SupplierService service) : ControllerBase
+	public class SupplierController(ISupplierService service) : ControllerBase
 	{
 		[HttpGet]
 		public async Task<ActionResult<List<SupplierModel>?>> GetAllAsync()
