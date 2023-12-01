@@ -32,16 +32,16 @@ namespace BludataAPI.Services
 			else return companies;
 		}
 
-		public async Task<CompanyDTO> AddAsync(CompanyDTO companyDTO)
+		public async Task<bool> AddAsync(CompanyDTO companyDTO)
 		{
 			CompanyModel company = CompanyMapper.DTOToModel(companyDTO);
 
 			await context.AddAsync(company);
 			await context.SaveChangesAsync();
 
-			return CompanyMapper.ModelToDTO(company);
+			return true;
 		}
-		public async Task<CompanyDTO?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
+		public async Task<CompanyModel?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
 		{
 			CompanyModel? company = await context.Companies.FindAsync(companyID);
 
@@ -52,7 +52,7 @@ namespace BludataAPI.Services
 
 				await context.SaveChangesAsync();
 
-				return CompanyMapper.ModelToDTO(company);
+				return company;
 			}
 		}
 		public async Task<bool?> RemoveByIDAsync(int companyID)

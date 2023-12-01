@@ -1,5 +1,6 @@
 ﻿using BludataAPI.DTOs;
 using BludataAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Interfaces
 {
@@ -11,8 +12,8 @@ namespace BludataAPI.Interfaces
 		public Task<List<SupplierDTO>?> GetByCompanyNameAsync(string companyName);
 		public Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF);
 
-		public Task<SupplierDTO> AddAsync(SupplierDTO supplierDTO);
-		public Task<SupplierDTO?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO);
+		public Task<bool> AddAsync(SupplierDTO supplierDTO);
+		public Task<SupplierModel?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO);
 		public Task<bool?> RemoveByIDAsync(int supplierID);
 	}
 }

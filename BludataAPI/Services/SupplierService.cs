@@ -48,36 +48,29 @@ namespace BludataAPI.Services
 			else return suppliers;
 		}
 
-		public async Task<SupplierDTO> AddAsync(SupplierDTO supplierDTO)
+		public async Task<bool> AddAsync(SupplierDTO supplierDTO)
 		{
 			SupplierModel supplier = SupplierMapper.DTOToModel(supplierDTO);
 
-			
+			SupplierUtils.HandleForm(supplier, supplierDTO);
+
+			await context.Suppliers.AddAsync(supplier);
+			await context.SaveChangesAsync();
+
+			return true;
 		}
-		public async Task<SupplierDTO?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
+		public async Task<SupplierModel?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
 		{
 			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
-			int supplierAge = 0;
-
-			if (supplier == null) return null;
+			
+			if(supplier == null) return null;
 			else
 			{
-				if (supplier.BirthDate != null)
-				{
-					supplierAge = DateTime.Now.Year - supplier.BirthDate.Value.Year;
+				SupplierUtils.HandleForm(supplier, supplierDTO);
 
-					if (DateTime.Now < supplier.BirthDate.Value.AddYears(supplierAge)) supplierAge--;
-				}
+				await context.SaveChangesAsync();
 
-				if (supplier.Companies.Any(com => com.UF.Equals("PR", StringComparison.CurrentCultureIgnoreCase)) && supplierAge < 18) throw new InvalidOperationException("An under legal age supplier can't be assigned to a company registered in PR.");
-				else
-				{
-					supplier = SupplierMapper.DTOToModel(supplierDTO);
-
-					await context.SaveChangesAsync();
-
-					return SupplierMapper.ModelToDTO(supplier);
-				}
+				return supplier;
 			}
 		}
 		public async Task<bool?> RemoveByIDAsync(int supplierID)

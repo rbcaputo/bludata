@@ -5,6 +5,8 @@ namespace BludataAPI.Utils
 {
 	public class SupplierUtils
 	{
+		private static readonly int _legalAge = 18;
+
 		public static int CheckDocType(SupplierModel supplierModel)
 		{
 			if (supplierModel.DocType.Equals("CNPJ", StringComparison.CurrentCultureIgnoreCase)) return 1;
@@ -17,7 +19,7 @@ namespace BludataAPI.Utils
 			{
 				if (supplierModel.Companies.Any(com => com.UF.Equals("PR", StringComparison.CurrentCultureIgnoreCase)))
 				{
-					if (supplierModel.BirthDate!.Value.Year - DateTime.Now.Year < 18) return false;
+					if (supplierModel.BirthDate!.Value.Year - DateTime.Now.Year < _legalAge) return false;
 					else return true;
 				}
 				else return true;
@@ -26,7 +28,7 @@ namespace BludataAPI.Utils
 			return true;
 		}
 
-		public static SupplierDTO FillForm(SupplierModel supplierModel, SupplierDTO supplierDTO)
+		public static SupplierDTO HandleForm(SupplierModel supplierModel, SupplierDTO supplierDTO)
 		{
 			if (CheckDocType(supplierModel) == 1) supplierModel.CNPJ = supplierDTO.CNPJ;
 			else
@@ -37,7 +39,7 @@ namespace BludataAPI.Utils
 					supplierModel.RG = supplierDTO.RG;
 					supplierModel.BirthDate = supplierDTO.BirthDate;
 				}
-				else throw new InvalidOperationException(/* TODO: exception message */);
+				else throw new InvalidOperationException("An under legal age supplier can't be assigned to a company registered in PR.");
 			}
 
 			return supplierDTO;

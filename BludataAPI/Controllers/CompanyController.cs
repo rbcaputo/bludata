@@ -14,7 +14,7 @@ namespace BludataAPI.Controllers
 		{
 			List<CompanyModel>? companies = await service.GetAllAsync();
 
-			if (companies == null) return BadRequest("This database doesn't have any entries registered.");
+			if (companies == null) return BadRequest("Companies database doesn't have any entries registered.");
 			else return Ok(companies);
 		}
 		[HttpGet("{companyID}")]
@@ -22,7 +22,7 @@ namespace BludataAPI.Controllers
 		{
 			CompanyModel? company = await service.GetByIDAsync(companyID);
 
-			if (company == null) return NotFound($"Entry with ID {companyID} inexistent or not found.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
 			else return Ok(company);
 		}
 		[HttpGet("name/{companyName}")]
@@ -30,23 +30,23 @@ namespace BludataAPI.Controllers
 		{
 			List<CompanyDTO>? companies = await service.GetByNameAsync(companyName);
 
-			if (companies == null) return NotFound($"Entry with name {companyName} inexistent or not found.");
+			if (companies == null) return NotFound($"Company entry with name {companyName} inexistent or not found.");
 			else return Ok(companies);
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<CompanyDTO>> AddAsync(CompanyDTO companyDTO)
+		public async Task<IActionResult> AddAsync(CompanyDTO companyDTO)
 		{
-			CompanyDTO company = await service.AddAsync(companyDTO);
+			await service.AddAsync(companyDTO);
 
-			return Ok(company);
+			return Ok($"Company entry with name {companyDTO.Name} registered successfully.");
 		}
 		[HttpPut("{companyID}")]
 		public async Task<ActionResult<CompanyDTO>> EditByIDAsync(int companyID, CompanyDTO companyDTO)
 		{
-			CompanyDTO? company = await service.EditByIDAsync(companyID, companyDTO);
+			CompanyModel? company = await service.EditByIDAsync(companyID, companyDTO);
 
-			if (company == null) return NotFound($"Entry with ID {companyID} inexistent or not found.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
 			else return Ok(company);
 		}
 		[HttpDelete("{companyID}")]
@@ -54,8 +54,8 @@ namespace BludataAPI.Controllers
 		{
 			bool? company = await service.RemoveByIDAsync(companyID);
 
-			if (company == null) return NotFound($"Entry with ID {companyID} inexistent or not found.");
-			else return Ok($"Company with ID {companyID} successfuly removed.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
+			else return Ok($"Company entry with ID {companyID} removed successfully.");
 		}
 	}
 }
