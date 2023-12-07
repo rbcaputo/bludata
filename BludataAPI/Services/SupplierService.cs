@@ -12,7 +12,7 @@ namespace BludataAPI.Services
 	{
 		public async Task<List<SupplierModel>?> GetAllAsync()
 		{
-			List<SupplierModel>? suppliers = await context.Suppliers.ToListAsync();
+			List<SupplierModel>? suppliers = await context.Suppliers.Include(sup => sup.Companies).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
 			else return suppliers;
@@ -33,7 +33,7 @@ namespace BludataAPI.Services
 		}
 		public async Task<List<SupplierDTO>?> GetByCompanyNameAsync(string companyName)
 		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.Name.Equals(companyName, StringComparison.CurrentCultureIgnoreCase)))
+			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.Name.ToLower() == companyName.ToLower()))
 				.Select(sup => SupplierMapper.ModelToDTO(sup)).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
@@ -41,7 +41,7 @@ namespace BludataAPI.Services
 		}
 		public async Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF)
 		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.UF.Equals(companyUF, StringComparison.CurrentCultureIgnoreCase)))
+			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.UF.ToLower() == companyUF.ToLower()))
 				.Select(sup => SupplierMapper.ModelToDTO(sup)).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
@@ -51,15 +51,14 @@ namespace BludataAPI.Services
 		public async Task<bool> AddAsync(SupplierDTO supplierDTO)
 		{
 			SupplierModel supplier = SupplierMapper.DTOToModel(supplierDTO);
-
-			SupplierUtils.HandleForm(supplier, supplierDTO);
+			supplier = SupplierUtils.HandleForm(supplier, supplierDTO);
 
 			await context.Suppliers.AddAsync(supplier);
 			await context.SaveChangesAsync();
 
 			return true;
 		}
-		public async Task<SupplierModel?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
+		public async Task<bool?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
 		{
 			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
 			
@@ -70,7 +69,7 @@ namespace BludataAPI.Services
 
 				await context.SaveChangesAsync();
 
-				return supplier;
+				return true;
 			}
 		}
 		public async Task<bool?> RemoveByIDAsync(int supplierID)

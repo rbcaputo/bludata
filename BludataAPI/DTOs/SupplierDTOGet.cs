@@ -1,12 +1,10 @@
 ﻿namespace BludataAPI.DTOs
 {
-	public class SupplierDTO
+	public class SupplierDTOGet
 	{
-		public int ID { get; set; }
 		public string Name { get; set; } = string.Empty;
 		public string DocType { get; set; } = string.Empty;
 		public DateTime SubDate { get; set; }
-		public List<CompanyDTOGet> Companies { get; set; } = [];
 
 		public string? CNPJ { get; set; }
 		public string? CPF { get; set; }

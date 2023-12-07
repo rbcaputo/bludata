@@ -13,7 +13,7 @@ namespace BludataAPI.Interfaces
 		public Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF);
 
 		public Task<bool> AddAsync(SupplierDTO supplierDTO);
-		public Task<SupplierModel?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO);
+		public Task<bool?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO);
 		public Task<bool?> RemoveByIDAsync(int supplierID);
 	}
 }

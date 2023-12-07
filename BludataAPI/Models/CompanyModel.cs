@@ -1,4 +1,6 @@
-﻿namespace BludataAPI.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BludataAPI.Models
 {
 	public class CompanyModel
 	{

@@ -25,7 +25,7 @@ namespace BludataAPI.Services
 		}
 		public async Task<List<CompanyDTO>?> GetByNameAsync(string companyName)
 		{
-			List<CompanyDTO>? companies = await context.Companies.Where(com => com.Name.Equals(companyName, StringComparison.CurrentCultureIgnoreCase))
+			List<CompanyDTO>? companies = await context.Companies.Where(com => com.Name.ToLower() == companyName.ToLower())
 				.Select(com => CompanyMapper.ModelToDTO(com)).ToListAsync();
 
 			if (companies.Count == 0) return null;
@@ -41,18 +41,18 @@ namespace BludataAPI.Services
 
 			return true;
 		}
-		public async Task<CompanyModel?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
+		public async Task<bool?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
 		{
 			CompanyModel? company = await context.Companies.FindAsync(companyID);
 
 			if (company == null) return null;
 			else
 			{
-				company = CompanyMapper.DTOToModel(companyDTO);
+				CompanyMapper.DTOToModelPut(company, companyDTO);
 
 				await context.SaveChangesAsync();
 
-				return company;
+				return true;
 			}
 		}
 		public async Task<bool?> RemoveByIDAsync(int companyID)

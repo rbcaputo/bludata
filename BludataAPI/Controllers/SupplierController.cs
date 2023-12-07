@@ -25,7 +25,7 @@ namespace BludataAPI.Controllers
 			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} inexistent or not found.");
 			else return supplier;
 		}
-		[HttpGet("/name/{supplierName}")]
+		[HttpGet("name/{supplierName}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByNameAsync(string supplierName)
 		{
 			List<SupplierDTO>? suppliers = await service.GetByNameAsync(supplierName);
@@ -33,7 +33,7 @@ namespace BludataAPI.Controllers
 			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} inexistent or not found.");
 			else return Ok(suppliers);
 		}
-		[HttpGet("/company/name/{companyName}")]
+		[HttpGet("company/name/{companyName}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyNameAsync(string companyName)
 		{
 			List<SupplierDTO>? suppliers = await service.GetByCompanyNameAsync(companyName);
@@ -41,7 +41,7 @@ namespace BludataAPI.Controllers
 			if (suppliers == null) return NotFound($"No suppliers entries linked to company entry with name {companyName} were found.");
 			else return Ok(suppliers);
 		}
-		[HttpGet("/company/uf/{companyUF}")]
+		[HttpGet("company/uf/{companyUF}")]
 		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyUFAsync(string companyUF)
 		{
 			List<SupplierDTO>? suppliers = await service.GetByCompanyUFAsync(companyUF);
@@ -69,7 +69,7 @@ namespace BludataAPI.Controllers
 		{
 			try
 			{
-				SupplierModel? supplier = await service.EditByIDAsync(supplierID, supplierDTO);
+				bool? supplier = await service.EditByIDAsync(supplierID, supplierDTO);
 
 				if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} inexistent or not found.");
 				else return Ok($"Supplier entry with ID {supplierID} updated successfully.");

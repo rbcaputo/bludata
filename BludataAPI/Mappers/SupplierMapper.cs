@@ -5,54 +5,84 @@ namespace BludataAPI.Mappers
 {
 	public class SupplierMapper
 	{
-		public static SupplierDTO ModelToDTO(SupplierModel supplierModel)
+		public static SupplierDTOGet ModelToDTOGet(SupplierModel supplierModel)
 		{
-			List<CompanyDTO> companies = [];
-
-			foreach (CompanyModel company in supplierModel.Companies)
-			{
-				CompanyDTO companyDTO = CompanyMapper.ModelToDTO(company);
-
-				companies.Add(companyDTO);
-			}
-
 			return new()
 			{
 				Name = supplierModel.Name,
-				DocType = supplierModel.DocType.ToUpper(),
-				SubDate = supplierModel.SubDate,
-				Companies = companies,
+				DocType = supplierModel.DocType,
 
-				CPF = supplierModel.CPF,
 				CNPJ = supplierModel.CNPJ,
+				CPF = supplierModel.CPF,
 				RG = supplierModel.RG,
 				BirthDate = supplierModel.BirthDate
 			};
 		}
 
-		public static SupplierModel DTOToModel(SupplierDTO supplierDTO)
+		public static SupplierDTO ModelToDTO(SupplierModel supplierModel)
 		{
-			List<CompanyModel> companies = [];
+			List<CompanyDTOGet> companies = [];
 
-			foreach (CompanyDTO company in supplierDTO.Companies)
-			{
-				CompanyModel companyModel = CompanyMapper.DTOToModel(company);
-
-				companies.Add(companyModel);
-			}
+			foreach (CompanyModel company in supplierModel.Companies) companies.Add(CompanyMapper.ModelToDTOGet(company));
 
 			return new()
 			{
-				Name= supplierDTO.Name,
-				DocType = supplierDTO.DocType.ToUpper(),
-				SubDate = supplierDTO.SubDate,
+				ID = supplierModel.ID,
+				Name = supplierModel.Name,
+				DocType = supplierModel.DocType.ToUpper(),
+				SubDate = supplierModel.SubDate,
 				Companies = companies,
 
+				CNPJ = supplierModel.CNPJ,
+				CPF = supplierModel.CPF,
+				RG = supplierModel.RG,
+				BirthDate = supplierModel.BirthDate
+			};
+		}
+
+		//public static SupplierModel DTOGetToModel(SupplierDTOGet supplierDTOGet)
+		//{
+		//	return new()
+		//	{
+		//		Name = supplierDTOGet.Name,
+		//		DocType = supplierDTOGet.DocType.ToUpper(),
+		//		SubDate = supplierDTOGet.SubDate,
+
+		//		CNPJ = supplierDTOGet.CNPJ,
+		//		CPF = supplierDTOGet.CPF,
+		//		RG = supplierDTOGet.RG,
+		//		BirthDate = supplierDTOGet.BirthDate
+		//	};
+		//}
+
+		public static SupplierModel DTOToModel(SupplierDTO supplierDTO, List<CompanyModel>? companyModelList = null)
+		{
+			return new()
+			{
+				Name = supplierDTO.Name,
+				DocType = supplierDTO.DocType.ToUpper(),
+				SubDate = supplierDTO.SubDate,
+				Companies = companyModelList ??= [],
+
+				CNPJ = supplierDTO.CNPJ,
 				CPF = supplierDTO.CPF,
-				CNPJ= supplierDTO.CNPJ,
 				RG = supplierDTO.RG,
 				BirthDate = supplierDTO.BirthDate
 			};
+		}
+
+		public static SupplierModel DTOToModelPut(SupplierModel supplierModel, SupplierDTO supplierDTO, List<CompanyModel>? companyModelList = null)
+		{
+			supplierModel.Name = supplierDTO.Name;
+			supplierModel.DocType = supplierDTO.DocType.ToUpper();
+			supplierModel.Companies = companyModelList ??= [];
+
+			supplierModel.CNPJ = supplierDTO.CNPJ;
+			supplierModel.CPF = supplierDTO.CPF;
+			supplierModel.RG = supplierDTO.RG;
+			supplierModel.BirthDate = supplierDTO.BirthDate;
+
+			return supplierModel;
 		}
 	}
 }

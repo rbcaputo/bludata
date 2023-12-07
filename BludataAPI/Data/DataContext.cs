@@ -12,10 +12,14 @@ namespace BludataAPI.Data
 		{
 			base.OnModelCreating(builder);
 
+			builder.Entity<CompanyModel>(com => com.HasIndex(doc => doc.CNPJ).IsUnique(true));
+			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CNPJ).IsUnique(true));
+			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CPF).IsUnique(true));
+
 			builder.Entity<CompanyModel>()
 				.HasMany(com => com.Suppliers)
 				.WithMany(sup => sup.Companies)
-				.UsingEntity(jnt => jnt.ToTable("CompanySupplier"));
+				.UsingEntity(jtb => jtb.ToTable("CompanySupplier"));
 		}
 	}
 }

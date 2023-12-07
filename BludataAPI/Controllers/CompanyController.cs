@@ -44,10 +44,10 @@ namespace BludataAPI.Controllers
 		[HttpPut("{companyID}")]
 		public async Task<ActionResult<CompanyDTO>> EditByIDAsync(int companyID, CompanyDTO companyDTO)
 		{
-			CompanyModel? company = await service.EditByIDAsync(companyID, companyDTO);
+			bool? company = await service.EditByIDAsync(companyID, companyDTO);
 
 			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
-			else return Ok(company);
+			else return Ok($"Company entry with ID {companyID} updated successfully.");
 		}
 		[HttpDelete("{companyID}")]
 		public async Task<IActionResult> RemoveByIDAsync(int companyID)
