@@ -1,4 +1,4 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Supplier;
 using BludataAPI.Models;
 
 namespace BludataAPI.Utils
@@ -52,4 +52,3 @@ namespace BludataAPI.Utils
 		}
 	}
 }
-

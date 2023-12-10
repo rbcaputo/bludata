@@ -1,4 +1,6 @@
-﻿namespace BludataAPI.DTOs
+﻿using BludataAPI.DTOs.Company;
+
+namespace BludataAPI.DTOs.Supplier
 {
 	public class SupplierDTO
 	{

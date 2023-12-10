@@ -1,5 +1,5 @@
 ﻿using BludataAPI.Data;
-using BludataAPI.DTOs;
+using BludataAPI.DTOs.Supplier;
 using BludataAPI.Interfaces;
 using BludataAPI.Mappers;
 using BludataAPI.Models;
@@ -61,8 +61,8 @@ namespace BludataAPI.Services
 		public async Task<bool?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
 		{
 			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
-			
-			if(supplier == null) return null;
+
+			if (supplier == null) return null;
 			else
 			{
 				SupplierUtils.HandleForm(supplier, supplierDTO);

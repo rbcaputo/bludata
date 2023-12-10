@@ -1,12 +1,11 @@
-﻿using BludataAPI.DTOs;
-using BludataAPI.Models;
+﻿using BludataAPI.DTOs.Company;
 
 namespace BludataAPI.Interfaces
 {
 	public interface ICompanyService
 	{
-		public Task<List<CompanyModel>?> GetAllAsync();
-		public Task<CompanyModel?> GetByIDAsync(int companyID);
+		public Task<List<CompanyDTO>?> GetAllAsync();
+		public Task<CompanyDTO?> GetByIDAsync(int companyID);
 		public Task<List<CompanyDTO>?> GetByNameAsync(string companyName);
 
 		public Task<bool> AddAsync(CompanyDTO companyDTO);

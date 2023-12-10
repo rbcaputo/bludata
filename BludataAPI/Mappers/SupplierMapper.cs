@@ -1,4 +1,5 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Company;
+using BludataAPI.DTOs.Supplier;
 using BludataAPI.Models;
 
 namespace BludataAPI.Mappers
@@ -39,21 +40,6 @@ namespace BludataAPI.Mappers
 				BirthDate = supplierModel.BirthDate
 			};
 		}
-
-		//public static SupplierModel DTOGetToModel(SupplierDTOGet supplierDTOGet)
-		//{
-		//	return new()
-		//	{
-		//		Name = supplierDTOGet.Name,
-		//		DocType = supplierDTOGet.DocType.ToUpper(),
-		//		SubDate = supplierDTOGet.SubDate,
-
-		//		CNPJ = supplierDTOGet.CNPJ,
-		//		CPF = supplierDTOGet.CPF,
-		//		RG = supplierDTOGet.RG,
-		//		BirthDate = supplierDTOGet.BirthDate
-		//	};
-		//}
 
 		public static SupplierModel DTOToModel(SupplierDTO supplierDTO, List<CompanyModel>? companyModelList = null)
 		{

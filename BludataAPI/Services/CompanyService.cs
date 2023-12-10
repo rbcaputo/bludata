@@ -1,5 +1,5 @@
 ﻿using BludataAPI.Data;
-using BludataAPI.DTOs;
+using BludataAPI.DTOs.Company;
 using BludataAPI.Interfaces;
 using BludataAPI.Mappers;
 using BludataAPI.Models;
@@ -9,19 +9,31 @@ namespace BludataAPI.Services
 {
 	public class CompanyService(DataContext context) : ICompanyService
 	{
-		public async Task<List<CompanyModel>?> GetAllAsync()
+		public async Task<List<CompanyDTO>?> GetAllAsync()
 		{
-			List<CompanyModel>? companies = await context.Companies.ToListAsync();
+			List<CompanyModel>? companies = await context.Companies.Include(com => com.Suppliers).ToListAsync();
 
 			if (companies.Count == 0) return null;
-			else return companies;
+			else
+			{
+				List<CompanyDTO> companiesGet = [];
+
+				foreach (CompanyModel company in companies) companiesGet.Add(CompanyMapper.ModelToDTO(company));
+
+				return companiesGet;
+			}
 		}
-		public async Task<CompanyModel?> GetByIDAsync(int companyID)
+		public async Task<CompanyDTO?> GetByIDAsync(int companyID)
 		{
 			CompanyModel? company = await context.Companies.FindAsync(companyID);
 
 			if (company == null) return null;
-			else return company;
+			else
+			{
+				CompanyDTO companyGet = CompanyMapper.ModelToDTO(company);
+
+				return companyGet;
+			}
 		}
 		public async Task<List<CompanyDTO>?> GetByNameAsync(string companyName)
 		{

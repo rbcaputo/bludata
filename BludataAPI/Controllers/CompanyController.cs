@@ -1,4 +1,4 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Company;
 using BludataAPI.Interfaces;
 using BludataAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ namespace BludataAPI.Controllers
 		[HttpGet]
 		public async Task<ActionResult<List<CompanyModel>?>> GetAllAsync()
 		{
-			List<CompanyModel>? companies = await service.GetAllAsync();
+			List<CompanyDTO>? companies = await service.GetAllAsync();
 
 			if (companies == null) return BadRequest("Companies database doesn't have any entries registered.");
 			else return Ok(companies);
@@ -20,7 +20,7 @@ namespace BludataAPI.Controllers
 		[HttpGet("{companyID}")]
 		public async Task<ActionResult<CompanyModel?>> GetByIDAsync(int companyID)
 		{
-			CompanyModel? company = await service.GetByIDAsync(companyID);
+			CompanyDTO? company = await service.GetByIDAsync(companyID);
 
 			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
 			else return Ok(company);

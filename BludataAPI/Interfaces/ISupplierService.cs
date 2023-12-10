@@ -1,10 +1,9 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Supplier;
 using BludataAPI.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Interfaces
 {
-	public interface ISupplierService
+    public interface ISupplierService
 	{
 		public Task<List<SupplierModel>?> GetAllAsync();
 		public Task<SupplierModel?> GetByIDAsync(int supplierID);

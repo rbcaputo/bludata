@@ -1,4 +1,4 @@
-﻿namespace BludataAPI.DTOs
+﻿namespace BludataAPI.DTOs.Company
 {
 	public class CompanyDTOGet
 	{

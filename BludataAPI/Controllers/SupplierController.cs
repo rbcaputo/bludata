@@ -1,4 +1,4 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Supplier;
 using BludataAPI.Interfaces;
 using BludataAPI.Models;
 using Microsoft.AspNetCore.Mvc;

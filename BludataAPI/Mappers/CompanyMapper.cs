@@ -1,4 +1,5 @@
-﻿using BludataAPI.DTOs;
+﻿using BludataAPI.DTOs.Company;
+using BludataAPI.DTOs.Supplier;
 using BludataAPI.Models;
 
 namespace BludataAPI.Mappers
@@ -27,19 +28,9 @@ namespace BludataAPI.Mappers
 				Name = companyModel.Name,
 				UF = companyModel.UF.ToUpper(),
 				CNPJ = companyModel.CNPJ,
-				Suppliers = suppliers,
+				Suppliers = suppliers
 			};
 		}
-
-		//public static CompanyModel DTOToModel(CompanyDTOGet companyDTOGet)
-		//{
-		//	return new()
-		//	{
-		//		Name= companyDTOGet.Name,
-		//		UF = companyDTOGet.UF,
-		//		CNPJ = companyDTOGet.CNPJ
-		//	};
-		//}
 
 		public static CompanyModel DTOToModel(CompanyDTO companyDTO, List<SupplierModel>? supplierModelList = null)
 		{
