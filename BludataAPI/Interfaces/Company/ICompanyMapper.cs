@@ -5,7 +5,6 @@ namespace BludataAPI.Interfaces.Company
 {
 	public interface ICompanyMapper
 	{
-		public CompanyDTOGet ModelToDTOGet(CompanyModel companyModel);
 		public CompanyDTO ModelToDTO(CompanyModel companyModel);
 		
 		public Task<CompanyModel> DTOToModelAsync(CompanyDTO companyDTO);

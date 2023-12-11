@@ -9,7 +9,7 @@ namespace BludataAPI.Services
 {
 	public class CompanyService(DataContext context, IMapperFactory factory) : ICompanyService
 	{
-		private readonly ICompanyMapper _mapper = (ICompanyMapper)factory.CreateCompanyMapper(context);
+		private readonly Lazy<ICompanyMapper> _mapper = factory.CreateCompanyMapper(context);
 
 		public async Task<List<CompanyDTO>?> GetAllAsync()
 		{
@@ -20,7 +20,7 @@ namespace BludataAPI.Services
 			{
 				List<CompanyDTO> results = [];
 
-				foreach (CompanyModel company in companies) results.Add(_mapper.ModelToDTO(company));
+				foreach (CompanyModel company in companies) results.Add(_mapper.Value.ModelToDTO(company));
 
 				return results;
 			}
@@ -32,7 +32,7 @@ namespace BludataAPI.Services
 			if (company == null) return null;
 			else
 			{
-				CompanyDTO result = _mapper.ModelToDTO(company);
+				CompanyDTO result = _mapper.Value.ModelToDTO(company);
 
 				return result;
 			}
@@ -42,7 +42,7 @@ namespace BludataAPI.Services
 			List<CompanyDTO>? companies = await context.Companies
 				.Where(com => com.Name.ToLower() == companyName.ToLower())
 				.Include(com => com.Suppliers)
-				.Select(com => _mapper.ModelToDTO(com))
+				.Select(com => _mapper.Value.ModelToDTO(com))
 				.ToListAsync();
 
 			if (companies.Count == 0) return null;
@@ -51,7 +51,7 @@ namespace BludataAPI.Services
 
 		public async Task<bool> AddAsync(CompanyDTO companyDTO)
 		{
-			CompanyModel company = await _mapper.DTOToModelAsync(companyDTO);
+			CompanyModel company = await _mapper.Value.DTOToModelAsync(companyDTO);
 
 			await context.AddAsync(company);
 			await context.SaveChangesAsync();
@@ -65,7 +65,7 @@ namespace BludataAPI.Services
 			if (company == null) return null;
 			else
 			{
-				await _mapper.DTOToModelPutAsync(company, companyDTO);
+				await _mapper.Value.DTOToModelPutAsync(company, companyDTO);
 				await context.SaveChangesAsync();
 
 				return true;

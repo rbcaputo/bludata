@@ -2,29 +2,39 @@
 using BludataAPI.DTOs.Company;
 using BludataAPI.DTOs.Supplier;
 using BludataAPI.Interfaces.Company;
-using BludataAPI.Interfaces.Supplier;
 using BludataAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BludataAPI.Mappers
 {
-	public class CompanyMapper(DataContext context, Lazy<ISupplierMapper> mapper) : ICompanyMapper
+	public class CompanyMapper(DataContext context) : ICompanyMapper
 	{
-		public CompanyDTOGet ModelToDTOGet(CompanyModel companymodel)
-		{
-			return new()
-			{
-				Name = companymodel.Name,
-				UF = companymodel.UF,
-				CNPJ = companymodel.CNPJ
-			};
-		}
+		//public CompanyDTOGet ModelToDTOGet(CompanyModel companymodel, Lazy<ISupplierMapper> mapper)
+		//{
+		//	return new()
+		//	{
+		//		Name = companymodel.Name,
+		//		UF = companymodel.UF,
+		//		CNPJ = companymodel.CNPJ
+		//	};
+		//}
 
 		public CompanyDTO ModelToDTO(CompanyModel companyModel)
 		{
 			List<SupplierDTOGet> suppliers = [];
 
-			foreach (SupplierModel supplier in companyModel.Suppliers) suppliers.Add(mapper.Value.ModelToDTOGet(supplier));
+			foreach (SupplierModel supplier in companyModel.Suppliers) suppliers.Add(new()
+			{
+				Name = supplier.Name,
+				DocType = supplier.DocType,
+				SubDate = supplier.SubDate,
+				Phones = supplier.Phones,
+
+				CNPJ = supplier.CNPJ,
+				CPF = supplier.CPF,
+				RG = supplier.RG,
+				BirthDate = supplier.BirthDate
+			});
 
 			return new()
 			{

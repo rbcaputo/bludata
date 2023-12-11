@@ -13,14 +13,14 @@ namespace BludataAPI.Factories
 			ISupplierMapper mapper = provider.GetRequiredService<ISupplierMapper>();
 			Lazy<ISupplierMapper> lazyMapper = new(() => mapper);
 
-			return new Lazy<ICompanyMapper>(() => new CompanyMapper(context, lazyMapper));
+			return new Lazy<ICompanyMapper>(() => new CompanyMapper(context));
 		}
 		public Lazy<ISupplierMapper> CreateSupplierMapper(DataContext context)
 		{
 			ICompanyMapper mapper = provider.GetRequiredService<ICompanyMapper>();
 			Lazy<ICompanyMapper> lazyMapper = new(() => mapper);
 
-			return new Lazy<ISupplierMapper>(() => new SupplierMapper(context, lazyMapper));
+			return new Lazy<ISupplierMapper>(() => new SupplierMapper(context));
 		}
 	}
 }

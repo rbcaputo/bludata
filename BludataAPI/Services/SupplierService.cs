@@ -10,7 +10,7 @@ namespace BludataAPI.Services
 {
 	public class SupplierService(DataContext context, IMapperFactory factory) : ISupplierService
 	{
-		private readonly ISupplierMapper _mapper = (ISupplierMapper)factory.CreateSupplierMapper(context);
+		private readonly Lazy<ISupplierMapper> _mapper = factory.CreateSupplierMapper(context);
 
 		public async Task<List<SupplierDTO>?> GetAllAsync()
 		{
@@ -21,7 +21,7 @@ namespace BludataAPI.Services
 			{
 				List<SupplierDTO>? results = [];
 
-				foreach (SupplierModel supplier in suppliers) results.Add(_mapper.ModelToDTO(supplier));
+				foreach (SupplierModel supplier in suppliers) results.Add(_mapper.Value.ModelToDTO(supplier));
 
 				return results;
 			}
@@ -33,14 +33,14 @@ namespace BludataAPI.Services
 			if (supplier == null) return null;
 			else
 			{
-				SupplierDTO result = _mapper.ModelToDTO(supplier);
+				SupplierDTO result = _mapper.Value.ModelToDTO(supplier);
 
 				return result;
 			}
 		}
 		public async Task<List<SupplierDTO>?> GetByNameAsync(string supplierName)
 		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Include(sup => sup.Companies).Select(sup => _mapper.ModelToDTO(sup)).ToListAsync();
+			List<SupplierDTO>? suppliers = await context.Suppliers.Include(sup => sup.Companies).Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
 			else return suppliers;
@@ -48,7 +48,7 @@ namespace BludataAPI.Services
 		public async Task<List<SupplierDTO>?> GetByCompanyNameAsync(string companyName)
 		{
 			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.Name.ToLower() == companyName.ToLower()))
-				.Select(sup => _mapper.ModelToDTO(sup)).ToListAsync();
+				.Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
 			else return suppliers;
@@ -56,7 +56,7 @@ namespace BludataAPI.Services
 		public async Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF)
 		{
 			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.UF.ToLower() == companyUF.ToLower()))
-				.Select(sup => _mapper.ModelToDTO(sup)).ToListAsync();
+				.Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
 
 			if (suppliers.Count == 0) return null;
 			else return suppliers;
@@ -64,7 +64,7 @@ namespace BludataAPI.Services
 
 		public async Task<bool> AddAsync(SupplierDTO supplierDTO)
 		{
-			SupplierModel supplier = await _mapper.DTOToModelAsync(supplierDTO);
+			SupplierModel supplier = await _mapper.Value.DTOToModelAsync(supplierDTO);
 			supplier = SupplierUtils.HandleForm(supplier, supplierDTO);
 
 			await context.Suppliers.AddAsync(supplier);

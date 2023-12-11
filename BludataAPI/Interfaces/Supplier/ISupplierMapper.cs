@@ -5,7 +5,6 @@ namespace BludataAPI.Interfaces.Supplier
 {
 	public interface ISupplierMapper
 	{
-		public SupplierDTOGet ModelToDTOGet(SupplierModel supplierModel);
 		public SupplierDTO ModelToDTO(SupplierModel supplierModel);
 
 		public Task<SupplierModel> DTOToModelAsync(SupplierDTO supplierDTO);
