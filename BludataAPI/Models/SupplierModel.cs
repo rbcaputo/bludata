@@ -6,7 +6,8 @@
 		public string Name { get; set; } = string.Empty;
 		public string DocType { get; set; } = string.Empty;
 		public DateTime SubDate { get; set; }
-		public List<CompanyModel> Companies { get; set; } = [];
+		public List<string> Phones { get; set; } = [];
+		public virtual List<CompanyModel> Companies { get; set; } = [];
 
 		public string? CNPJ { get; set; }
 		public string? CPF { get; set; }

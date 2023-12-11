@@ -1,28 +1,27 @@
 ﻿using BludataAPI.DTOs.Supplier;
-using BludataAPI.Interfaces;
-using BludataAPI.Models;
+using BludataAPI.Interfaces.Supplier;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Controllers
 {
-	[Route("[controller]")]
+    [Route("[controller]")]
 	[ApiController]
 	public class SupplierController(ISupplierService service) : ControllerBase
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<SupplierModel>?>> GetAllAsync()
+		public async Task<ActionResult<List<SupplierDTO>?>> GetAllAsync()
 		{
-			List<SupplierModel>? suppliers = await service.GetAllAsync();
+			List<SupplierDTO>? suppliers = await service.GetAllAsync();
 
 			if (suppliers == null) return BadRequest("Suppliers database doesn't have any entries registered.");
 			else return Ok(suppliers);
 		}
 		[HttpGet("{supplierID}")]
-		public async Task<ActionResult<SupplierModel?>> GetByIDAsync(int supplierID)
+		public async Task<ActionResult<SupplierDTO?>> GetByIDAsync(int supplierID)
 		{
-			SupplierModel? supplier = await service.GetByIDAsync(supplierID);
+			SupplierDTO? supplier = await service.GetByIDAsync(supplierID);
 
-			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} inexistent or not found.");
+			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} nonexistent or not found.");
 			else return supplier;
 		}
 		[HttpGet("name/{supplierName}")]
@@ -30,7 +29,7 @@ namespace BludataAPI.Controllers
 		{
 			List<SupplierDTO>? suppliers = await service.GetByNameAsync(supplierName);
 
-			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} inexistent or not found.");
+			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} nonexistent or not found.");
 			else return Ok(suppliers);
 		}
 		[HttpGet("company/name/{companyName}")]
@@ -71,7 +70,7 @@ namespace BludataAPI.Controllers
 			{
 				bool? supplier = await service.EditByIDAsync(supplierID, supplierDTO);
 
-				if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} inexistent or not found.");
+				if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} nonexistent or not found.");
 				else return Ok($"Supplier entry with ID {supplierID} updated successfully.");
 			}
 			catch (Exception exc)
@@ -84,7 +83,7 @@ namespace BludataAPI.Controllers
 		{
 			bool? supplier = await service.RemoveByIDAsync(supplierID);
 
-			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} inexistent or not found.");
+			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} nonexistent or not found.");
 			else return Ok($"Supplier entry with ID {supplierID} removed successfully.");
 		}
 	}

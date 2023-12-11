@@ -1,17 +1,23 @@
-﻿using BludataAPI.DTOs.Company;
+﻿using BludataAPI.Data;
+using BludataAPI.DTOs.Company;
 using BludataAPI.DTOs.Supplier;
+using BludataAPI.Interfaces.Company;
+using BludataAPI.Interfaces.Supplier;
 using BludataAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BludataAPI.Mappers
 {
-	public class SupplierMapper
+	public class SupplierMapper(DataContext context, Lazy<ICompanyMapper> mapper) : ISupplierMapper
 	{
-		public static SupplierDTOGet ModelToDTOGet(SupplierModel supplierModel)
+		public SupplierDTOGet ModelToDTOGet(SupplierModel supplierModel)
 		{
 			return new()
 			{
 				Name = supplierModel.Name,
 				DocType = supplierModel.DocType,
+				SubDate = supplierModel.SubDate,
+				Phones = supplierModel.Phones,
 
 				CNPJ = supplierModel.CNPJ,
 				CPF = supplierModel.CPF,
@@ -20,11 +26,11 @@ namespace BludataAPI.Mappers
 			};
 		}
 
-		public static SupplierDTO ModelToDTO(SupplierModel supplierModel)
+		public SupplierDTO ModelToDTO(SupplierModel supplierModel)
 		{
 			List<CompanyDTOGet> companies = [];
 
-			foreach (CompanyModel company in supplierModel.Companies) companies.Add(CompanyMapper.ModelToDTOGet(company));
+			foreach (CompanyModel company in supplierModel.Companies) companies.Add(mapper.Value.ModelToDTOGet(company));
 
 			return new()
 			{
@@ -32,6 +38,7 @@ namespace BludataAPI.Mappers
 				Name = supplierModel.Name,
 				DocType = supplierModel.DocType.ToUpper(),
 				SubDate = supplierModel.SubDate,
+				Phones = supplierModel.Phones,
 				Companies = companies,
 
 				CNPJ = supplierModel.CNPJ,
@@ -41,14 +48,33 @@ namespace BludataAPI.Mappers
 			};
 		}
 
-		public static SupplierModel DTOToModel(SupplierDTO supplierDTO, List<CompanyModel>? companyModelList = null)
+		private async Task<List<CompanyModel>> CheckCompaniesAsync(SupplierDTO supplierDTO)
+		{
+			List<CompanyModel> companies = [];
+
+			if (supplierDTO.Companies.Count != 0)
+			{
+				foreach (CompanyDTOGet company in supplierDTO.Companies)
+				{
+					CompanyModel? result = await context.Companies.FirstOrDefaultAsync(com => com.CNPJ == company.CNPJ);
+
+					if (result == null) throw new Exception("One or more company entries nonexistent or not found.");
+					else companies.Add(result);
+				}
+			}
+
+			return companies;
+		}
+
+		public async Task<SupplierModel> DTOToModelAsync(SupplierDTO supplierDTO)
 		{
 			return new()
 			{
 				Name = supplierDTO.Name,
 				DocType = supplierDTO.DocType.ToUpper(),
 				SubDate = supplierDTO.SubDate,
-				Companies = companyModelList ??= [],
+				Phones = supplierDTO.Phones,
+				Companies = await CheckCompaniesAsync(supplierDTO),
 
 				CNPJ = supplierDTO.CNPJ,
 				CPF = supplierDTO.CPF,
@@ -57,11 +83,12 @@ namespace BludataAPI.Mappers
 			};
 		}
 
-		public static SupplierModel DTOToModelPut(SupplierModel supplierModel, SupplierDTO supplierDTO, List<CompanyModel>? companyModelList = null)
+		public async Task<SupplierModel> DTOToModelPutAsync(SupplierModel supplierModel, SupplierDTO supplierDTO)
 		{
 			supplierModel.Name = supplierDTO.Name;
 			supplierModel.DocType = supplierDTO.DocType.ToUpper();
-			supplierModel.Companies = companyModelList ??= [];
+			supplierModel.Phones = supplierDTO.Phones;
+			supplierModel.Companies = await CheckCompaniesAsync(supplierDTO);
 
 			supplierModel.CNPJ = supplierDTO.CNPJ;
 			supplierModel.CPF = supplierDTO.CPF;

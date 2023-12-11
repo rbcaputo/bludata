@@ -7,6 +7,7 @@ namespace BludataAPI.Data
 	{
 		public DbSet<CompanyModel> Companies { get; set; }
 		public DbSet<SupplierModel> Suppliers { get; set; }
+		public DbSet<CompanySupplierModel> CompaniesSuppliers { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -16,10 +17,9 @@ namespace BludataAPI.Data
 			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CNPJ).IsUnique(true));
 			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CPF).IsUnique(true));
 
-			builder.Entity<CompanyModel>()
-				.HasMany(com => com.Suppliers)
+			builder.Entity<CompanyModel>(com => com.HasMany(com => com.Suppliers)
 				.WithMany(sup => sup.Companies)
-				.UsingEntity(jtb => jtb.ToTable("CompanySupplier"));
+				.UsingEntity<CompanySupplierModel>());
 		}
 	}
 }

@@ -1,12 +1,11 @@
 ﻿using BludataAPI.DTOs.Supplier;
-using BludataAPI.Models;
 
-namespace BludataAPI.Interfaces
+namespace BludataAPI.Interfaces.Supplier
 {
-    public interface ISupplierService
+	public interface ISupplierService
 	{
-		public Task<List<SupplierModel>?> GetAllAsync();
-		public Task<SupplierModel?> GetByIDAsync(int supplierID);
+		public Task<List<SupplierDTO>?> GetAllAsync();
+		public Task<SupplierDTO?> GetByIDAsync(int supplierID);
 		public Task<List<SupplierDTO>?> GetByNameAsync(string supplierName);
 		public Task<List<SupplierDTO>?> GetByCompanyNameAsync(string companyName);
 		public Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF);

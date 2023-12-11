@@ -1,11 +1,11 @@
 ﻿using BludataAPI.DTOs.Company;
-using BludataAPI.Interfaces;
+using BludataAPI.Interfaces.Company;
 using BludataAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Controllers
 {
-	[Route("[controller]")]
+    [Route("[controller]")]
 	[ApiController]
 	public class CompanyController(ICompanyService service) : ControllerBase
 	{
@@ -22,7 +22,7 @@ namespace BludataAPI.Controllers
 		{
 			CompanyDTO? company = await service.GetByIDAsync(companyID);
 
-			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} nonexistent or not found.");
 			else return Ok(company);
 		}
 		[HttpGet("name/{companyName}")]
@@ -30,7 +30,7 @@ namespace BludataAPI.Controllers
 		{
 			List<CompanyDTO>? companies = await service.GetByNameAsync(companyName);
 
-			if (companies == null) return NotFound($"Company entry with name {companyName} inexistent or not found.");
+			if (companies == null) return NotFound($"Company entry with name {companyName} nonexistent or not found.");
 			else return Ok(companies);
 		}
 
@@ -46,7 +46,7 @@ namespace BludataAPI.Controllers
 		{
 			bool? company = await service.EditByIDAsync(companyID, companyDTO);
 
-			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} nonexistent or not found.");
 			else return Ok($"Company entry with ID {companyID} updated successfully.");
 		}
 		[HttpDelete("{companyID}")]
@@ -54,7 +54,7 @@ namespace BludataAPI.Controllers
 		{
 			bool? company = await service.RemoveByIDAsync(companyID);
 
-			if (company == null) return NotFound($"Company entry with ID {companyID} inexistent or not found.");
+			if (company == null) return NotFound($"Company entry with ID {companyID} nonexistent or not found.");
 			else return Ok($"Company entry with ID {companyID} removed successfully.");
 		}
 	}
