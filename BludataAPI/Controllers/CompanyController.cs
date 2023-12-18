@@ -23,7 +23,7 @@ namespace BludataAPI.Controllers
 		{
 			List<CompanyDTO?>? companies = await service.GetAllByUFAsync(companiesUF);
 
-			if (companies == null) return NotFound($"Company entries with UF {companiesUF.ToUpper()} nonexistent or not found.");
+			if (companies == null) return NotFound($"Companies entries with UF {companiesUF.ToUpper()} nonexistent or not found.");
 			else return Ok(companies);
 		}
 
