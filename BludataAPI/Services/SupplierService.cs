@@ -13,7 +13,7 @@ namespace BludataAPI.Services
 		{
 			List<SupplierModel>? suppliers = await context.Suppliers
 				.Include(sup => sup.SupplierCompanies)
-				.ThenInclude(com => com.Company)
+				.ThenInclude(csm => csm.Company)
 				.ToListAsync();
 
 			if (suppliers.Count == 0) return null;
@@ -25,7 +25,20 @@ namespace BludataAPI.Services
 			List<SupplierDTO?> suppliers = await context.Suppliers
 				.Where(sup => sup.Name.ToLower() == supplierName.ToLower())
 				.Include(sup => sup.SupplierCompanies)
-				.ThenInclude(com => com.Company)
+				.ThenInclude(csm => csm.Company)
+				.Select(sup => SupplierMapper.ModelToDTO(sup))
+				.ToListAsync();
+
+			if (suppliers == null) return null;
+			else return suppliers;
+		}
+
+		public async Task<List<SupplierDTO?>?> GetAllBySubDateAsync(DateTime subDate)
+		{
+			List<SupplierDTO?> suppliers = await context.Suppliers
+				.Where(sup => sup.SubDate == subDate)
+				.Include(sup => sup.SupplierCompanies)
+				.ThenInclude(csm => csm.Company)
 				.Select(sup => SupplierMapper.ModelToDTO(sup))
 				.ToListAsync();
 
@@ -37,7 +50,7 @@ namespace BludataAPI.Services
 		{
 			SupplierModel? supplier = await context.Suppliers
 				.Include(sup => sup.SupplierCompanies)
-				.ThenInclude(com => com.Company)
+				.ThenInclude(csm => csm.Company)
 				.FirstOrDefaultAsync(sup => sup.ID == supplierID);
 
 			if (supplier == null) return null;
@@ -50,7 +63,7 @@ namespace BludataAPI.Services
 			{
 				SupplierModel? supplier = await context.Suppliers
 					.Include(sup => sup.SupplierCompanies)
-					.ThenInclude(com => com.Company)
+					.ThenInclude(csm => csm.Company)
 					.FirstOrDefaultAsync(sup => sup.CNPJ == docNumber);
 
 				if (supplier == null) return null;
@@ -60,7 +73,7 @@ namespace BludataAPI.Services
 			{
 				SupplierModel? supplier = await context.Suppliers
 					.Include(sup => sup.SupplierCompanies)
-					.ThenInclude(com => com.Company)
+					.ThenInclude(csm => csm.Company)
 					.FirstOrDefaultAsync(sup => sup.CPF == docNumber);
 
 				if (supplier == null) return null;

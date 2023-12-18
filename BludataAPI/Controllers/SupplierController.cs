@@ -10,7 +10,7 @@ namespace BludataAPI.Controllers
 	public class SupplierController(ISupplierService service) : ControllerBase
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<SupplierModel>?>> GetAllAsync()
+		public async Task<ActionResult<List<SupplierModel?>?>> GetAllAsync()
 		{
 			List<SupplierModel>? suppliers = await service.GetAllAsync();
 
@@ -19,11 +19,20 @@ namespace BludataAPI.Controllers
 		}
 
 		[HttpGet("name/{supplierName}")]
-		public async Task<ActionResult<List<SupplierDTO>?>?> GetAllByNameAsync(string supplierName)
+		public async Task<ActionResult<List<SupplierDTO?>?>> GetAllByNameAsync(string supplierName)
 		{
 			List<SupplierDTO?>? suppliers = await service.GetAllByNameAsync(supplierName);
 
-			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} nonexistent or not found.");
+			if (suppliers == null) return NotFound($"Suppliers entry with name {supplierName} nonexistent or not found.");
+			else return Ok(suppliers);
+		}
+
+		[HttpGet("subDate/{subDate}")]
+		public async Task<ActionResult<List<SupplierDTO?>?>> GetAllBySubDateAsync(DateTime subDate)
+		{
+			List<SupplierDTO?>? suppliers = await service.GetAllBySubDateAsync(subDate);
+
+			if (suppliers == null) return NotFound($"Suppliers entry with subscription date {subDate} nonexistent or not found.");
 			else return Ok(suppliers);
 		}
 
@@ -36,7 +45,7 @@ namespace BludataAPI.Controllers
 			else return supplier;
 		}
 
-		[HttpGet("docnumber/{docNumber}")]
+		[HttpGet("docNumber/{docNumber}")]
 		public async Task<ActionResult<SupplierDTO?>> GetByDocNumberAsync(string docType, string docNumber)
 		{
 			SupplierDTO? supplier = await service.GetByDocNumberAsync(docType, docNumber);

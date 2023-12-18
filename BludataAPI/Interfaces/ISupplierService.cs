@@ -7,6 +7,7 @@ namespace BludataAPI.Interfaces
 	{
 		public Task<List<SupplierModel>?> GetAllAsync();
 		public Task<List<SupplierDTO?>?> GetAllByNameAsync(string supplierName);
+		public Task<List<SupplierDTO?>?> GetAllBySubDateAsync(DateTime subDate);
 		public Task<SupplierDTO?> GetByIDAsync(int supplierID);
 		public Task<SupplierDTO?> GetByDocNumberAsync(string docType, string docNumber);
 
