@@ -13,6 +13,7 @@ namespace BludataAPI.Services
 		{
 			List<CompanyModel>? companies = await context.Companies
 				.Include(com => com.CompanySuppliers)
+				.ThenInclude(sup => sup.Supplier)
 				.ToListAsync();
 
 			if (companies.Count == 0) return null;
@@ -24,6 +25,7 @@ namespace BludataAPI.Services
 			List<CompanyDTO?> companies = await context.Companies
 				.Where(com => com.UF == companiesUF)
 				.Include(com => com.CompanySuppliers)
+				.ThenInclude(sup => sup.Supplier)
 				.Select(com => CompanyMapper.ModelToDTO(com))
 				.ToListAsync();
 
@@ -35,6 +37,7 @@ namespace BludataAPI.Services
 		{
 			CompanyModel? company = await context.Companies
 				.Include(com => com.CompanySuppliers)
+				.ThenInclude(sup => sup.Supplier)
 				.FirstOrDefaultAsync(com => com.ID == companyID);
 
 			if (company == null) return null;
@@ -46,6 +49,7 @@ namespace BludataAPI.Services
 			CompanyModel? company = await context.Companies
 				.Where(com => com.CNPJ == companyCNPJ)
 				.Include(com => com.CompanySuppliers)
+				.ThenInclude(sup => sup.Supplier)
 				.FirstOrDefaultAsync();
 
 			if (company == null) return null;
@@ -57,6 +61,7 @@ namespace BludataAPI.Services
 			CompanyModel? company = await context.Companies
 				.Where(com => com.Name == companyName)
 				.Include(com => com.CompanySuppliers)
+				.ThenInclude(sup => sup.Supplier)
 				.FirstOrDefaultAsync();
 
 			if (company == null) return null;

@@ -13,6 +13,7 @@ namespace BludataAPI.Services
 		{
 			List<SupplierModel>? suppliers = await context.Suppliers
 				.Include(sup => sup.SupplierCompanies)
+				.ThenInclude(com => com.Company)
 				.ToListAsync();
 
 			if (suppliers.Count == 0) return null;
@@ -24,6 +25,7 @@ namespace BludataAPI.Services
 			List<SupplierDTO?> suppliers = await context.Suppliers
 				.Where(sup => sup.Name.ToLower() == supplierName.ToLower())
 				.Include(sup => sup.SupplierCompanies)
+				.ThenInclude(com => com.Company)
 				.Select(sup => SupplierMapper.ModelToDTO(sup))
 				.ToListAsync();
 
@@ -35,6 +37,7 @@ namespace BludataAPI.Services
 		{
 			SupplierModel? supplier = await context.Suppliers
 				.Include(sup => sup.SupplierCompanies)
+				.ThenInclude(com => com.Company)
 				.FirstOrDefaultAsync(sup => sup.ID == supplierID);
 
 			if (supplier == null) return null;
@@ -47,6 +50,7 @@ namespace BludataAPI.Services
 			{
 				SupplierModel? supplier = await context.Suppliers
 					.Include(sup => sup.SupplierCompanies)
+					.ThenInclude(com => com.Company)
 					.FirstOrDefaultAsync(sup => sup.CNPJ == docNumber);
 
 				if (supplier == null) return null;
@@ -56,6 +60,7 @@ namespace BludataAPI.Services
 			{
 				SupplierModel? supplier = await context.Suppliers
 					.Include(sup => sup.SupplierCompanies)
+					.ThenInclude(com => com.Company)
 					.FirstOrDefaultAsync(sup => sup.CPF == docNumber);
 
 				if (supplier == null) return null;

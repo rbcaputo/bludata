@@ -2,6 +2,7 @@ using BludataAPI.Data;
 using BludataAPI.Interfaces;
 using BludataAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection"));
 });
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 

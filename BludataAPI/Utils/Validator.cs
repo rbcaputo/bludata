@@ -6,25 +6,27 @@ namespace BludataAPI.Utils
 {
 	public static class Validator
 	{
-		public static List<CompanySupplierModel> ValidateCompanySuppliersAge(CompanyDTO? companyDTO = null, string companyUF = "pr", int legalAge = 18)
+		public static List<CompanySupplierModel> ValidateCompanySuppliersAge(CompanyDTO? companyDTO, string companyUF = "pr", int legalAge = 18)
 		{
 			if (companyDTO == null) return [];
 			else
 			{
-				List<CompanySupplierModel> companySuppliers = [];
-
-				if (companyDTO.CompanySuppliers.Count != 0)
+				if (companyDTO.UF == companyUF)
 				{
+					List<CompanySupplierModel> companySuppliers = [];
+
 					foreach (CompanySupplierModel companySupplier in companyDTO.CompanySuppliers)
 					{
-						if (companyDTO.UF.ToLower() == companyUF
-								&& DateTime.Now.Year - companySupplier.Supplier!.BirthDate!.Value.Year > legalAge) companySuppliers.Add(companySupplier);
-						else throw new Exception($"A supplier entry under the age of {legalAge} cannot be registered in a company entry from {companyUF}");
+						if (DateTime.Now.Year - companySupplier.Supplier!.BirthDate!.Value.Year < legalAge)
+							throw new Exception($"A supplier entry under the age of {legalAge} cannot be registered in a company entry with UF {companyUF.ToUpper()}");
+						else companySuppliers.Add(companySupplier);
 					}
-				}
 
-				return companySuppliers;
+					return companySuppliers;
+				}
 			}
+
+			return [];
 		}
 
 		public static List<CompanySupplierModel> ValidateSuppliersCompanyUF(SupplierDTO? supplierDTO, string companyUF = "pr", int legalAge = 18)
@@ -32,20 +34,22 @@ namespace BludataAPI.Utils
 			if (supplierDTO == null) return [];
 			else
 			{
-				List<CompanySupplierModel> supplierCompanies = [];
-
-				if (supplierDTO.SupplierCompanies.Count != 0)
+				if (DateTime.Now.Year - supplierDTO.BirthDate!.Value.Year < legalAge)
 				{
+					List<CompanySupplierModel> supplierCompanies = [];
+
 					foreach (CompanySupplierModel companySupplier in supplierDTO.SupplierCompanies)
 					{
-						if (DateTime.Now.Year - supplierDTO.BirthDate!.Value.Year > legalAge
-								&& companySupplier.Company!.UF.ToLower() == companyUF) supplierCompanies.Add(companySupplier);
-						else throw new Exception($"A supplier entry under the age of {legalAge} cannot be registered in a company entry from {companyUF}");
+						if (companySupplier.Company!.UF.ToLower() == companyUF)
+							throw new Exception($"A supplier entry under the age of {legalAge} cannot be registered in a company entry with UF {companyUF.ToUpper()}");
+						else supplierCompanies.Add(companySupplier);
 					}
-				}
 
-				return supplierCompanies;
+					return supplierCompanies;
+				}
 			}
+
+			return [];
 		}
 	}
 }

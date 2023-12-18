@@ -65,7 +65,7 @@ namespace BludataAPI.Mappers
 			else return null;
 		}
 
-		public static bool? DTOToModelPut(SupplierDTO supplierDTO, SupplierModel supplierModel)
+		public static bool? DTOToModelPut(SupplierDTO? supplierDTO, SupplierModel? supplierModel)
 		{
 			if (supplierDTO == null || supplierModel == null) return null;
 			else
