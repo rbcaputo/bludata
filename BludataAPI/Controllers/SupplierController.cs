@@ -23,7 +23,7 @@ namespace BludataAPI.Controllers
 		{
 			List<SupplierDTO?>? suppliers = await service.GetAllByNameAsync(supplierName);
 
-			if (suppliers == null) return NotFound($"Suppliers entry with name {supplierName} nonexistent or not found.");
+			if (suppliers == null) return NotFound($"Suppliers entries with name {supplierName} nonexistent or not found.");
 			else return Ok(suppliers);
 		}
 
@@ -32,7 +32,7 @@ namespace BludataAPI.Controllers
 		{
 			List<SupplierDTO?>? suppliers = await service.GetAllBySubDateAsync(subDate);
 
-			if (suppliers == null) return NotFound($"Suppliers entry with subscription date {subDate} nonexistent or not found.");
+			if (suppliers == null) return NotFound($"Suppliers entries with subscription date {subDate} nonexistent or not found.");
 			else return Ok(suppliers);
 		}
 
