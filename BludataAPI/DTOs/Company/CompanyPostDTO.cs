@@ -1,6 +1,6 @@
 ﻿namespace BludataAPI.DTOs.Company
 {
-	public class CompanyDTOGet
+	public class CompanyPostDTO
 	{
 		public string Name { get; set; } = string.Empty;
 		public string UF { get; set; } = string.Empty;

@@ -1,107 +1,83 @@
-﻿using BludataAPI.Data;
-using BludataAPI.DTOs.Company;
-using BludataAPI.DTOs.Supplier;
-using BludataAPI.Interfaces.Company;
+﻿using BludataAPI.DTOs.Company;
 using BludataAPI.Models;
-using Microsoft.EntityFrameworkCore;
+using BludataAPI.Utils;
 
 namespace BludataAPI.Mappers
 {
-	public class CompanyMapper(DataContext context) : ICompanyMapper
+	public static class CompanyMapper
 	{
-		//public CompanyDTOGet ModelToDTOGet(CompanyModel companymodel, Lazy<ISupplierMapper> mapper)
-		//{
-		//	return new()
-		//	{
-		//		Name = companymodel.Name,
-		//		UF = companymodel.UF,
-		//		CNPJ = companymodel.CNPJ
-		//	};
-		//}
-
-		public CompanyDTO ModelToDTO(CompanyModel companyModel)
+		public static CompanyDTO? ModelToDTO(CompanyModel? companyModel)
 		{
-			List<SupplierDTOGet> suppliers = [];
-
-			foreach (SupplierModel supplier in companyModel.Suppliers) suppliers.Add(new()
-			{
-				Name = supplier.Name,
-				DocType = supplier.DocType,
-				SubDate = supplier.SubDate,
-				Phones = supplier.Phones,
-
-				CNPJ = supplier.CNPJ,
-				CPF = supplier.CPF,
-				RG = supplier.RG,
-				BirthDate = supplier.BirthDate
-			});
-
-			return new()
-			{
-				ID = companyModel.ID,
-				Name = companyModel.Name,
-				UF = companyModel.UF.ToUpper(),
-				CNPJ = companyModel.CNPJ,
-				Suppliers = suppliers
-			};
-		}
-
-		private async Task<List<SupplierModel>> CheckSuppliersAsync(CompanyDTO companyDTO)
-		{
-			List<SupplierModel> suppliers = [];
-
-			if (companyDTO.Suppliers.Count != 0)
-			{
-				foreach (SupplierDTOGet supplier in companyDTO.Suppliers)
-				{
-					if (supplier.DocType.ToLower() == "cnpj")
-					{
-						SupplierModel? result = await context.Suppliers.FirstOrDefaultAsync(sup => sup.CNPJ == supplier.CNPJ);
-
-						if (result == null) throw new Exception("One or more supplier entries nonexistent or not found.");
-						else suppliers.Add(result);
-					}
-					else
-					{
-						SupplierModel? result = await context.Suppliers.FirstOrDefaultAsync(sup => sup.CPF == supplier.CPF);
-
-						if (result == null) throw new Exception("One or more supplier entries nonexistent or not found.");
-						else suppliers.Add(result);
-					}
-				}
-			}
-
-			return suppliers;
-		}
-
-		public async Task<CompanyModel> DTOToModelAsync(CompanyDTO companyDTO)
-		{
-			try
+			if (companyModel == null) return null;
+			else
 			{
 				return new()
 				{
-					ID = companyDTO.ID,
+					Name = companyModel.Name,
+					UF = companyModel.UF.ToUpper(),
+					CNPJ = companyModel.CNPJ,
+
+					CompanySuppliers = companyModel.CompanySuppliers
+				};
+			}
+		}
+
+		public static CompanyModel? DTOToModel(CompanyDTO? companyDTO = null, CompanyPostDTO? companyPostDTO = null)
+		{
+			if (companyDTO != null)
+			{
+				return new()
+				{
 					Name = companyDTO.Name,
 					UF = companyDTO.UF.ToUpper(),
 					CNPJ = companyDTO.CNPJ,
-					Suppliers = await CheckSuppliersAsync(companyDTO)
+
+					CompanySuppliers = companyDTO.CompanySuppliers
 				};
 			}
-			catch (Exception exc) { throw new Exception(exc.ToString()); }
+			else if (companyPostDTO != null)
+			{
+				return new()
+				{
+					Name = companyPostDTO.Name,
+					UF = companyPostDTO.UF.ToUpper(),
+					CNPJ = companyPostDTO.CNPJ
+				};
+			}
+			else return null;
 		}
 
-		public async Task<CompanyModel> DTOToModelPutAsync(CompanyModel companyModel, CompanyDTO companyDTO)
+		public static bool? DTOToModelPut(CompanyDTO? companyDTO, CompanyModel? companyModel)
 		{
-			try
+			if (companyDTO == null || companyModel == null) return null;
+			else
 			{
-				companyModel.Name = companyDTO.Name;
-				companyModel.UF = companyDTO.UF.ToUpper();
-				companyModel.CNPJ = companyDTO.CNPJ;
-				companyModel.Suppliers = await CheckSuppliersAsync(companyDTO);
-			
-				return companyModel;
+				try
+				{
+					companyModel.Name = companyDTO.Name;
+					companyModel.UF = companyDTO.UF.ToUpper();
+					companyModel.CNPJ = companyDTO.CNPJ;
+
+					companyModel.CompanySuppliers = Validator.ValidateCompanySuppliersAge(companyDTO);
+
+					return true;
+				}
+				catch (Exception exc) { throw new Exception(exc.Message); }
 			}
-			catch (Exception exc) { throw new Exception(exc.ToString()); }
+		}
+
+		public static CompanyModel? CompanyPostDTOToModel(CompanyPostDTO companyPostDTO)
+		{
+			if (companyPostDTO == null) return null;
+			else
+			{
+				return new()
+				{
+					Name = companyPostDTO.Name,
+					UF = companyPostDTO.UF.ToUpper(),
+					CNPJ = companyPostDTO.CNPJ,
+				};
+			}
 		}
 	}
 }

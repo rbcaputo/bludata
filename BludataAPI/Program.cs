@@ -1,9 +1,5 @@
 using BludataAPI.Data;
-using BludataAPI.Factories;
 using BludataAPI.Interfaces;
-using BludataAPI.Interfaces.Company;
-using BludataAPI.Interfaces.Supplier;
-using BludataAPI.Mappers;
 using BludataAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +11,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection"));
 });
-builder.Services.AddScoped<IMapperFactory, MapperFactory>();
-builder.Services.AddScoped<ICompanyMapper, CompanyMapper>();
-builder.Services.AddScoped<ISupplierMapper, SupplierMapper>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 

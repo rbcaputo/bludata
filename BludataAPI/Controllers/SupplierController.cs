@@ -1,21 +1,32 @@
 ﻿using BludataAPI.DTOs.Supplier;
-using BludataAPI.Interfaces.Supplier;
+using BludataAPI.Interfaces;
+using BludataAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BludataAPI.Controllers
 {
-    [Route("[controller]")]
+	[Route("[controller]")]
 	[ApiController]
 	public class SupplierController(ISupplierService service) : ControllerBase
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<SupplierDTO>?>> GetAllAsync()
+		public async Task<ActionResult<List<SupplierModel>?>> GetAllAsync()
 		{
-			List<SupplierDTO>? suppliers = await service.GetAllAsync();
+			List<SupplierModel>? suppliers = await service.GetAllAsync();
 
 			if (suppliers == null) return BadRequest("Suppliers database doesn't have any entries registered.");
 			else return Ok(suppliers);
 		}
+
+		[HttpGet("name/{supplierName}")]
+		public async Task<ActionResult<List<SupplierDTO>?>?> GetAllByNameAsync(string supplierName)
+		{
+			List<SupplierDTO?>? suppliers = await service.GetAllByNameAsync(supplierName);
+
+			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} nonexistent or not found.");
+			else return Ok(suppliers);
+		}
+
 		[HttpGet("{supplierID}")]
 		public async Task<ActionResult<SupplierDTO?>> GetByIDAsync(int supplierID)
 		{
@@ -24,60 +35,39 @@ namespace BludataAPI.Controllers
 			if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} nonexistent or not found.");
 			else return supplier;
 		}
-		[HttpGet("name/{supplierName}")]
-		public async Task<ActionResult<List<SupplierDTO>?>> GetByNameAsync(string supplierName)
-		{
-			List<SupplierDTO>? suppliers = await service.GetByNameAsync(supplierName);
 
-			if (suppliers == null) return NotFound($"Supplier entry with name {supplierName} nonexistent or not found.");
-			else return Ok(suppliers);
-		}
-		[HttpGet("company/name/{companyName}")]
-		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyNameAsync(string companyName)
+		[HttpGet("docnumber/{docNumber}")]
+		public async Task<ActionResult<SupplierDTO?>> GetByDocNumberAsync(string docType, string docNumber)
 		{
-			List<SupplierDTO>? suppliers = await service.GetByCompanyNameAsync(companyName);
+			SupplierDTO? supplier = await service.GetByDocNumberAsync(docType, docNumber);
 
-			if (suppliers == null) return NotFound($"No suppliers entries linked to company entry with name {companyName} were found.");
-			else return Ok(suppliers);
-		}
-		[HttpGet("company/uf/{companyUF}")]
-		public async Task<ActionResult<List<SupplierDTO>?>> GetByCompanyUFAsync(string companyUF)
-		{
-			List<SupplierDTO>? suppliers = await service.GetByCompanyUFAsync(companyUF);
-
-			if (suppliers == null) return NotFound($"No suppliers entries linked to company entry with UF {companyUF} were found.");
-			else return Ok(suppliers);
+			if (docType.ToLower() == "cnpj" && supplier == null) return NotFound($"Supplier entry with CNPJ {docNumber} nonexistent or not found.");
+			else if (docType.ToLower() == "cpf" && supplier == null) return NotFound($"Supplier entry with CPF {docNumber} nonexistent or not found.");
+			else return Ok(supplier);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> AddAsync(SupplierDTO supplierDTO)
+		public async Task<IActionResult> AddAsync(SupplierPostDTO supplierPostDTO)
 		{
-			try
-			{
-				await service.AddAsync(supplierDTO);
+			await service.AddAsync(supplierPostDTO);
 
-				return Ok($"Supplier entry with name {supplierDTO.Name} registered successfully.");
-			}
-			catch (Exception exc)
-			{
-				return BadRequest(exc);
-			}
+			if (supplierPostDTO.DocType.ToLower() == "cnpj") return Ok($"Supplier entry with CNPJ {supplierPostDTO.CNPJ} registered successfully.");
+			else return Ok($"Supplier entry with CPF {supplierPostDTO.CPF} registered successfully.");
 		}
+
 		[HttpPut("{supplierID}")]
-		public async Task<IActionResult> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
+		public async Task<IActionResult> UpdateByIDAsync(int supplierID, SupplierDTO supplierDTO)
 		{
 			try
 			{
-				bool? supplier = await service.EditByIDAsync(supplierID, supplierDTO);
+				SupplierModel? supplier = await service.UpdateByIDAsync(supplierID, supplierDTO);
 
 				if (supplier == null) return NotFound($"Supplier entry with ID {supplierID} nonexistent or not found.");
 				else return Ok($"Supplier entry with ID {supplierID} updated successfully.");
 			}
-			catch (Exception exc)
-			{
-				return BadRequest(exc);
-			}
+			catch (Exception exc) { return BadRequest(exc.Message); }
 		}
+
 		[HttpDelete("{supplierID}")]
 		public async Task<IActionResult> RemoveByIDAsync(int supplierID)
 		{

@@ -1,6 +1,6 @@
 ﻿namespace BludataAPI.DTOs.Supplier
 {
-	public class SupplierDTOGet
+	public class SupplierPostDTO
 	{
 		public string Name { get; set; } = string.Empty;
 		public string DocType { get; set; } = string.Empty;

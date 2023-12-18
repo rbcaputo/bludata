@@ -13,13 +13,28 @@ namespace BludataAPI.Data
 		{
 			base.OnModelCreating(builder);
 
-			builder.Entity<CompanyModel>(com => com.HasIndex(doc => doc.CNPJ).IsUnique(true));
-			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CNPJ).IsUnique(true));
-			builder.Entity<SupplierModel>(sup => sup.HasIndex(doc => doc.CPF).IsUnique(true));
+			builder.Entity<CompanyModel>(com => com
+				.HasIndex(doc => doc.CNPJ)
+				.IsUnique(true));
+			builder.Entity<SupplierModel>(sup => sup
+				.HasIndex(doc => doc.CNPJ)
+				.IsUnique(true));
+			builder.Entity<SupplierModel>(sup => sup
+				.HasIndex(doc => doc.CPF)
+				.IsUnique(true));
 
-			builder.Entity<CompanyModel>(com => com.HasMany(com => com.Suppliers)
-				.WithMany(sup => sup.Companies)
-				.UsingEntity<CompanySupplierModel>());
+			builder.Entity<CompanySupplierModel>()
+				.HasKey(csm => new { csm.CompanyID, csm.SupplierID });
+
+			builder.Entity<CompanyModel>()
+				.HasMany(com => com.CompanySuppliers)
+				.WithOne(csm => csm.Company)
+				.HasForeignKey(csm => csm.CompanyID);
+
+			builder.Entity<SupplierModel>()
+				.HasMany(sup => sup.SupplierCompanies)
+				.WithOne(csm => csm.Supplier)
+				.HasForeignKey(csm => csm.SupplierID);
 		}
 	}
 }

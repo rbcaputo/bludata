@@ -1,105 +1,113 @@
-﻿using BludataAPI.Data;
-using BludataAPI.DTOs.Company;
-using BludataAPI.DTOs.Supplier;
-using BludataAPI.Interfaces.Supplier;
+﻿using BludataAPI.DTOs.Supplier;
 using BludataAPI.Models;
-using Microsoft.EntityFrameworkCore;
+using BludataAPI.Utils;
 
 namespace BludataAPI.Mappers
 {
-	public class SupplierMapper(DataContext context) : ISupplierMapper
+	public static class SupplierMapper
 	{
-		//public SupplierDTOGet ModelToDTOGet(SupplierModel supplierModel)
-		//{
-		//	return new()
-		//	{
-		//		Name = supplierModel.Name,
-		//		DocType = supplierModel.DocType,
-		//		SubDate = supplierModel.SubDate,
-		//		Phones = supplierModel.Phones,
-
-		//		CNPJ = supplierModel.CNPJ,
-		//		CPF = supplierModel.CPF,
-		//		RG = supplierModel.RG,
-		//		BirthDate = supplierModel.BirthDate
-		//	};
-		//}
-
-		public SupplierDTO ModelToDTO(SupplierModel supplierModel)
+		public static SupplierDTO? ModelToDTO(SupplierModel? supplierModel)
 		{
-			List<CompanyDTOGet> companies = [];
-
-			foreach (CompanyModel company in supplierModel.Companies) companies.Add(new()
+			if (supplierModel == null) return null;
+			else
 			{
-				Name = company.Name,
-				UF = company.UF,
-				CNPJ = company.CNPJ
-			});
-
-			return new()
-			{
-				ID = supplierModel.ID,
-				Name = supplierModel.Name,
-				DocType = supplierModel.DocType.ToUpper(),
-				SubDate = supplierModel.SubDate,
-				Phones = supplierModel.Phones,
-				Companies = companies,
-
-				CNPJ = supplierModel.CNPJ,
-				CPF = supplierModel.CPF,
-				RG = supplierModel.RG,
-				BirthDate = supplierModel.BirthDate
-			};
-		}
-
-		private async Task<List<CompanyModel>> CheckCompaniesAsync(SupplierDTO supplierDTO)
-		{
-			List<CompanyModel> companies = [];
-
-			if (supplierDTO.Companies.Count != 0)
-			{
-				foreach (CompanyDTOGet company in supplierDTO.Companies)
+				return new()
 				{
-					CompanyModel? result = await context.Companies.FirstOrDefaultAsync(com => com.CNPJ == company.CNPJ);
+					Name = supplierModel.Name,
+					DocType = supplierModel.DocType.ToUpper(),
+					SubDate = supplierModel.SubDate,
+					Phones = supplierModel.Phones,
 
-					if (result == null) throw new Exception("One or more company entries nonexistent or not found.");
-					else companies.Add(result);
-				}
+					CNPJ = supplierModel.CNPJ,
+					CPF = supplierModel.CPF,
+					RG = supplierModel.RG,
+					BirthDate = supplierModel.BirthDate,
+
+					SupplierCompanies = supplierModel.SupplierCompanies
+				};
 			}
-
-			return companies;
 		}
 
-		public async Task<SupplierModel> DTOToModelAsync(SupplierDTO supplierDTO)
+		public static SupplierModel? DTOToModel(SupplierDTO? supplierDTO = null, SupplierPostDTO? supplierPostDTO = null)
 		{
-			return new()
+			if (supplierDTO != null)
 			{
-				Name = supplierDTO.Name,
-				DocType = supplierDTO.DocType.ToUpper(),
-				SubDate = supplierDTO.SubDate,
-				Phones = supplierDTO.Phones,
-				Companies = await CheckCompaniesAsync(supplierDTO),
+				return new()
+				{
+					Name = supplierDTO.Name,
+					DocType = supplierDTO.DocType.ToUpper(),
+					SubDate = supplierDTO.SubDate,
+					Phones = supplierDTO.Phones,
 
-				CNPJ = supplierDTO.CNPJ,
-				CPF = supplierDTO.CPF,
-				RG = supplierDTO.RG,
-				BirthDate = supplierDTO.BirthDate
-			};
+					CNPJ = supplierDTO.CNPJ,
+					CPF = supplierDTO.CPF,
+					RG = supplierDTO.RG,
+					BirthDate = supplierDTO.BirthDate,
+
+					SupplierCompanies = supplierDTO.SupplierCompanies
+				};
+			}
+			else if (supplierPostDTO != null)
+			{
+				return new()
+				{
+					Name = supplierPostDTO.Name,
+					DocType = supplierPostDTO.DocType.ToUpper(),
+					SubDate = supplierPostDTO.SubDate,
+					Phones = supplierPostDTO.Phones,
+
+					CNPJ = supplierPostDTO.CNPJ,
+					CPF = supplierPostDTO.CPF,
+					RG = supplierPostDTO.RG,
+					BirthDate = supplierPostDTO.BirthDate
+				};
+			}
+			else return null;
 		}
 
-		public async Task<SupplierModel> DTOToModelPutAsync(SupplierModel supplierModel, SupplierDTO supplierDTO)
+		public static bool? DTOToModelPut(SupplierDTO supplierDTO, SupplierModel supplierModel)
 		{
-			supplierModel.Name = supplierDTO.Name;
-			supplierModel.DocType = supplierDTO.DocType.ToUpper();
-			supplierModel.Phones = supplierDTO.Phones;
-			supplierModel.Companies = await CheckCompaniesAsync(supplierDTO);
+			if (supplierDTO == null || supplierModel == null) return null;
+			else
+			{
+				try
+				{
+					supplierModel.Name = supplierDTO.Name;
+					supplierModel.DocType = supplierDTO.DocType;
+					supplierModel.SubDate = supplierDTO.SubDate;
+					supplierModel.Phones = supplierDTO.Phones;
 
-			supplierModel.CNPJ = supplierDTO.CNPJ;
-			supplierModel.CPF = supplierDTO.CPF;
-			supplierModel.RG = supplierDTO.RG;
-			supplierModel.BirthDate = supplierDTO.BirthDate;
+					supplierModel.CNPJ = supplierDTO.CNPJ;
+					supplierModel.CPF = supplierDTO.CPF;
+					supplierModel.RG = supplierDTO.RG;
+					supplierModel.BirthDate = supplierDTO.BirthDate;
 
-			return supplierModel;
+					supplierModel.SupplierCompanies = Validator.ValidateSuppliersCompanyUF(supplierDTO);
+
+					return true;
+				}
+				catch (Exception exc) { throw new Exception(exc.Message); }
+			}
+		}
+
+		public static SupplierModel? SupplierModelPostDTOToModel(SupplierDTO? supplierDTO)
+		{
+			if (supplierDTO == null) return null;
+			else
+			{
+				return new()
+				{
+					Name = supplierDTO.Name,
+					DocType = supplierDTO.DocType.ToUpper(),
+					SubDate = supplierDTO.SubDate,
+					Phones = supplierDTO.Phones,
+
+					CNPJ = supplierDTO.CNPJ,
+					CPF = supplierDTO.CPF,
+					RG = supplierDTO.RG,
+					BirthDate = supplierDTO.BirthDate,
+				};
+			}
 		}
 	}
 }

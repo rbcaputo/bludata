@@ -1,93 +1,109 @@
 ﻿using BludataAPI.Data;
 using BludataAPI.DTOs.Supplier;
 using BludataAPI.Interfaces;
-using BludataAPI.Interfaces.Supplier;
+using BludataAPI.Mappers;
 using BludataAPI.Models;
-using BludataAPI.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BludataAPI.Services
 {
-	public class SupplierService(DataContext context, IMapperFactory factory) : ISupplierService
+	public class SupplierService(DataContext context) : ISupplierService
 	{
-		private readonly Lazy<ISupplierMapper> _mapper = factory.CreateSupplierMapper(context);
-
-		public async Task<List<SupplierDTO>?> GetAllAsync()
+		public async Task<List<SupplierModel>?> GetAllAsync()
 		{
-			List<SupplierModel>? suppliers = await context.Suppliers.Include(sup => sup.Companies).ToListAsync();
+			List<SupplierModel>? suppliers = await context.Suppliers
+				.Include(sup => sup.SupplierCompanies)
+				.ToListAsync();
 
 			if (suppliers.Count == 0) return null;
-			else
-			{
-				List<SupplierDTO>? results = [];
-
-				foreach (SupplierModel supplier in suppliers) results.Add(_mapper.Value.ModelToDTO(supplier));
-
-				return results;
-			}
+			else return suppliers;
 		}
+
+		public async Task<List<SupplierDTO?>?> GetAllByNameAsync(string supplierName)
+		{
+			List<SupplierDTO?> suppliers = await context.Suppliers
+				.Where(sup => sup.Name.ToLower() == supplierName.ToLower())
+				.Include(sup => sup.SupplierCompanies)
+				.Select(sup => SupplierMapper.ModelToDTO(sup))
+				.ToListAsync();
+
+			if (suppliers == null) return null;
+			else return suppliers;
+		}
+
 		public async Task<SupplierDTO?> GetByIDAsync(int supplierID)
 		{
-			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
+			SupplierModel? supplier = await context.Suppliers
+				.Include(sup => sup.SupplierCompanies)
+				.FirstOrDefaultAsync(sup => sup.ID == supplierID);
 
 			if (supplier == null) return null;
+			else return SupplierMapper.ModelToDTO(supplier);
+		}
+
+		public async Task<SupplierDTO?> GetByDocNumberAsync(string docType, string docNumber)
+		{
+			if (docType.ToLower() == "cnpj")
+			{
+				SupplierModel? supplier = await context.Suppliers
+					.Include(sup => sup.SupplierCompanies)
+					.FirstOrDefaultAsync(sup => sup.CNPJ == docNumber);
+
+				if (supplier == null) return null;
+				else return SupplierMapper.ModelToDTO(supplier);
+			}
 			else
 			{
-				SupplierDTO result = _mapper.Value.ModelToDTO(supplier);
+				SupplierModel? supplier = await context.Suppliers
+					.Include(sup => sup.SupplierCompanies)
+					.FirstOrDefaultAsync(sup => sup.CPF == docNumber);
 
-				return result;
+				if (supplier == null) return null;
+				else return SupplierMapper.ModelToDTO(supplier);
 			}
 		}
-		public async Task<List<SupplierDTO>?> GetByNameAsync(string supplierName)
+
+		public async Task<bool?> AddAsync(SupplierPostDTO? supplierPostDTO)
 		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Include(sup => sup.Companies).Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
-
-			if (suppliers.Count == 0) return null;
-			else return suppliers;
-		}
-		public async Task<List<SupplierDTO>?> GetByCompanyNameAsync(string companyName)
-		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.Name.ToLower() == companyName.ToLower()))
-				.Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
-
-			if (suppliers.Count == 0) return null;
-			else return suppliers;
-		}
-		public async Task<List<SupplierDTO>?> GetByCompanyUFAsync(string companyUF)
-		{
-			List<SupplierDTO>? suppliers = await context.Suppliers.Where(sup => sup.Companies.Any(com => com.UF.ToLower() == companyUF.ToLower()))
-				.Select(sup => _mapper.Value.ModelToDTO(sup)).ToListAsync();
-
-			if (suppliers.Count == 0) return null;
-			else return suppliers;
-		}
-
-		public async Task<bool> AddAsync(SupplierDTO supplierDTO)
-		{
-			SupplierModel supplier = await _mapper.Value.DTOToModelAsync(supplierDTO);
-			supplier = SupplierUtils.HandleForm(supplier, supplierDTO);
-
-			await context.Suppliers.AddAsync(supplier);
-			await context.SaveChangesAsync();
-
-			return true;
-		}
-		public async Task<bool?> EditByIDAsync(int supplierID, SupplierDTO supplierDTO)
-		{
-			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
-
-			if (supplier == null) return null;
+			if (supplierPostDTO == null) return null;
 			else
 			{
-				SupplierUtils.HandleForm(supplier, supplierDTO);
-				await context.SaveChangesAsync();
+				SupplierModel? supplier = SupplierMapper.DTOToModel(null, supplierPostDTO);
 
-				return true;
+				if (supplier == null) return null;
+				else
+				{
+					await context.Suppliers.AddAsync(supplier);
+					await context.SaveChangesAsync();
+
+					return true;
+				}
 			}
 		}
+
+		public async Task<SupplierModel?> UpdateByIDAsync(int supplierID, SupplierDTO? supplierDTO)
+		{
+			if (supplierDTO == null) return null;
+			else
+			{
+				SupplierModel? supplier = await context.Suppliers
+					.FindAsync(supplierID);
+
+				if (supplier == null) return null;
+				else
+				{
+					SupplierMapper.DTOToModelPut(supplierDTO, supplier);
+					await context.SaveChangesAsync();
+
+					return supplier;
+				}
+			}
+		}
+
 		public async Task<bool?> RemoveByIDAsync(int supplierID)
 		{
-			SupplierModel? supplier = await context.Suppliers.FindAsync(supplierID);
+			SupplierModel? supplier = await context.Suppliers
+				.FindAsync(supplierID);
 
 			if (supplier == null) return null;
 			else

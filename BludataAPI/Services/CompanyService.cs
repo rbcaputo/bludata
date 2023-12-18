@@ -1,79 +1,113 @@
 ﻿using BludataAPI.Data;
 using BludataAPI.DTOs.Company;
 using BludataAPI.Interfaces;
-using BludataAPI.Interfaces.Company;
+using BludataAPI.Mappers;
 using BludataAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BludataAPI.Services
 {
-	public class CompanyService(DataContext context, IMapperFactory factory) : ICompanyService
+	public class CompanyService(DataContext context) : ICompanyService
 	{
-		private readonly Lazy<ICompanyMapper> _mapper = factory.CreateCompanyMapper(context);
-
-		public async Task<List<CompanyDTO>?> GetAllAsync()
+		public async Task<List<CompanyModel>?> GetAllAsync()
 		{
-			List<CompanyModel>? companies = await context.Companies.Include(com => com.Suppliers).ToListAsync();
-
-			if (companies.Count == 0) return null;
-			else
-			{
-				List<CompanyDTO> results = [];
-
-				foreach (CompanyModel company in companies) results.Add(_mapper.Value.ModelToDTO(company));
-
-				return results;
-			}
-		}
-		public async Task<CompanyDTO?> GetByIDAsync(int companyID)
-		{
-			CompanyModel? company = await context.Companies.FindAsync(companyID);
-
-			if (company == null) return null;
-			else
-			{
-				CompanyDTO result = _mapper.Value.ModelToDTO(company);
-
-				return result;
-			}
-		}
-		public async Task<List<CompanyDTO>?> GetByNameAsync(string companyName)
-		{
-			List<CompanyDTO>? companies = await context.Companies
-				.Where(com => com.Name.ToLower() == companyName.ToLower())
-				.Include(com => com.Suppliers)
-				.Select(com => _mapper.Value.ModelToDTO(com))
+			List<CompanyModel>? companies = await context.Companies
+				.Include(com => com.CompanySuppliers)
 				.ToListAsync();
 
 			if (companies.Count == 0) return null;
 			else return companies;
 		}
 
-		public async Task<bool> AddAsync(CompanyDTO companyDTO)
+		public async Task<List<CompanyDTO?>?> GetAllByUFAsync(string companiesUF)
 		{
-			CompanyModel company = await _mapper.Value.DTOToModelAsync(companyDTO);
+			List<CompanyDTO?> companies = await context.Companies
+				.Where(com => com.UF == companiesUF)
+				.Include(com => com.CompanySuppliers)
+				.Select(com => CompanyMapper.ModelToDTO(com))
+				.ToListAsync();
 
-			await context.AddAsync(company);
-			await context.SaveChangesAsync();
-
-			return true;
+			if (companies.Count == 0) return null;
+			else return companies;
 		}
-		public async Task<bool?> EditByIDAsync(int companyID, CompanyDTO companyDTO)
+
+		public async Task<CompanyDTO?> GetByIDAsync(int companyID)
 		{
-			CompanyModel? company = await context.Companies.FindAsync(companyID);
+			CompanyModel? company = await context.Companies
+				.Include(com => com.CompanySuppliers)
+				.FirstOrDefaultAsync(com => com.ID == companyID);
 
 			if (company == null) return null;
+			else return CompanyMapper.ModelToDTO(company);
+		}
+
+		public async Task<CompanyDTO?> GetByCNPJAsync(string companyCNPJ)
+		{
+			CompanyModel? company = await context.Companies
+				.Where(com => com.CNPJ == companyCNPJ)
+				.Include(com => com.CompanySuppliers)
+				.FirstOrDefaultAsync();
+
+			if (company == null) return null;
+			else return CompanyMapper.ModelToDTO(company);
+		}
+
+		public async Task<CompanyDTO?> GetByNameAsync(string companyName)
+		{
+			CompanyModel? company = await context.Companies
+				.Where(com => com.Name == companyName)
+				.Include(com => com.CompanySuppliers)
+				.FirstOrDefaultAsync();
+
+			if (company == null) return null;
+			else return CompanyMapper.ModelToDTO(company);
+		}
+
+		public async Task<bool?> AddAsync(CompanyPostDTO? companyPostDTO)
+		{
+			if (companyPostDTO == null) return null;
 			else
 			{
-				await _mapper.Value.DTOToModelPutAsync(company, companyDTO);
-				await context.SaveChangesAsync();
+				CompanyModel? company = CompanyMapper.DTOToModel(null, companyPostDTO);
 
-				return true;
+				if (company == null) return null;
+				else
+				{
+					await context.Companies.AddAsync(company);
+					await context.SaveChangesAsync();
+
+					return true;
+				}
 			}
 		}
+
+		public async Task<CompanyModel?> UpdateByIDAsync(int companyID, CompanyDTO? companyDTO)
+		{
+			if (companyDTO == null) return null;
+			else
+			{
+				try
+				{
+					CompanyModel? company = await context.Companies
+					.FindAsync(companyID);
+
+					if (company == null) return null;
+					else
+					{
+						CompanyMapper.DTOToModelPut(companyDTO, company);
+						await context.SaveChangesAsync();
+
+						return company;
+					}
+				}
+				catch (Exception exc) { throw new Exception(exc.Message); }
+			}
+		}
+
 		public async Task<bool?> RemoveByIDAsync(int companyID)
 		{
-			CompanyModel? company = await context.Companies.FindAsync(companyID);
+			CompanyModel? company = await context.Companies
+				.FindAsync(companyID);
 
 			if (company == null) return null;
 			else
